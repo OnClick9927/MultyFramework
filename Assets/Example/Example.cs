@@ -1,9 +1,9 @@
 ﻿using MutiFramework;
 
 [Framework(Environment.Editor | Environment.Runtime)]
-public class IFFF : UpdateFramework
+public class ExampleFrame1 : UpdateFramework
 {
-    public override string name => "iffff";
+    public override string name => "ExampleFrame1";
 
     public override int priority => 8;
 
@@ -20,9 +20,9 @@ public class IFFF : UpdateFramework
     }
 }
 [Framework(Environment.Runtime)]
-public class cfff : UpdateFramework
+public class ExampleFrame2 : UpdateFramework
 {
-    public override string name => "cfff";
+    public override string name => "ExampleFrame2";
 
     public override int priority => 8;
 

@@ -7,6 +7,9 @@ namespace MutiFramework
     public class Frameworks : MonoBehaviour
     {
 //ToDo
+		public static ExampleFrame1 ExampleFrame1{ get { return GetFrame("ExampleFrame1") as ExampleFrame1;}} 
+		public static ExampleFrame2 ExampleFrame2{ get { return GetFrame("ExampleFrame2") as ExampleFrame2;}} 
+//ToDo
         private static MutiFrameworkContaner _container;
         static void Startup()
         {

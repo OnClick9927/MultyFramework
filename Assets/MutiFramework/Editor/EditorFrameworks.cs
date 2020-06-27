@@ -6,6 +6,9 @@ namespace MutiFramework
     public static class EditorFrameworks
     {
 //ToDo
+		public static ExampleFrame1 ExampleFrame1{ get { return GetFrame("ExampleFrame1") as ExampleFrame1;}} 
+//ToDo
+		
         private static MutiFrameworkContaner _container;
         [InitializeOnLoadMethod]
         static void Startup()
