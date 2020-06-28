@@ -17,6 +17,7 @@ namespace MutiFramework
             public static GUIStyle searchTextField = "SearchTextField";
             public static GUIStyle searchCancelButton = "SearchCancelButton";
             public static GUIStyle searchCancelButtonEmpty = "SearchCancelButtonEmpty";
+            public static GUIStyle foldout = "Foldout";
         }
 
         [MenuItem("MutiFramework/Window")]
@@ -213,7 +214,7 @@ namespace MutiFramework
             {
                 GUILayout.Label("Descibtion and base Tool", Styles.in_title);
                 var rect = GUILayoutUtility.GetLastRect();
-                _fold0 = GUI.Toggle(new Rect(rect.position, new Vector2(gap, rect.height)), _fold0, "");
+                _fold0 = GUI.Toggle(new Rect(rect.position, new Vector2(gap, rect.height)), _fold0, "", Styles.foldout);
                 if (new Rect(rect.position, new Vector2(rect.width - searchTxtWith - btnWith * 2, rect.height)).Contains(Event.current.mousePosition) && Event.current.type == EventType.MouseUp)
                 {
                     _fold0 = !_fold0;
@@ -231,7 +232,7 @@ namespace MutiFramework
                 GUILayout.Space(gap);
                 GUILayout.Label("Frameworks In Project", Styles.in_title);
                 var rect = GUILayoutUtility.GetLastRect();
-                _fold1 = GUI.Toggle(new Rect(rect.position, new Vector2(gap, rect.height)), _fold1, "");
+                _fold1 = GUI.Toggle(new Rect(rect.position, new Vector2(gap, rect.height)), _fold1, "", Styles.foldout);
                 if (new Rect(rect.position, new Vector2(rect.width - searchTxtWith - btnWith * 2, rect.height)).Contains(Event.current.mousePosition) && Event.current.type == EventType.MouseUp)
                 {
                     _fold1 = !_fold1;
@@ -271,7 +272,7 @@ namespace MutiFramework
                 GUILayout.Space(gap);
                 GUILayout.Label("Framework Collection", Styles.in_title);
                 var rect = GUILayoutUtility.GetLastRect();
-                _fold2 = GUI.Toggle(new Rect(rect.position, new Vector2(gap, rect.height)), _fold2, "");
+                _fold2 = GUI.Toggle(new Rect(rect.position, new Vector2(gap, rect.height)), _fold2, "", Styles.foldout);
                 if (new Rect(rect.position,new Vector2(rect.width- searchTxtWith-btnWith*2, rect.height)).Contains(Event.current.mousePosition) && Event.current.type == EventType.MouseUp)
                 {
                     _fold2 = !_fold2;
@@ -310,7 +311,7 @@ namespace MutiFramework
                 GUILayout.Space(gap);
                 GUILayout.Label("Tools", Styles.in_title);
                 var rect = GUILayoutUtility.GetLastRect();
-                _fold3 = GUI.Toggle(new Rect(rect.position, new Vector2(gap, rect.height)), _fold3, "");
+                _fold3 = GUI.Toggle(new Rect(rect.position, new Vector2(gap, rect.height)), _fold3, "", Styles.foldout);
                 if (new Rect(rect.position, new Vector2(rect.width - searchTxtWith - btnWith * 2, rect.height)).Contains(Event.current.mousePosition) && Event.current.type == EventType.MouseUp)
                 {
                     _fold3 = !_fold3;
