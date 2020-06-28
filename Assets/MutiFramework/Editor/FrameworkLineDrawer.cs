@@ -6,7 +6,7 @@
         public override void OnGUI()
         {
             base.OnGUI();
-            UnityEngine.GUILayout.Button("button");
+           
         }
     } 
 }

@@ -1,14 +1,29 @@
 ﻿using MutiFramework;
 using UnityEngine;
-using UnityEditor;
 
 public class ExampleFrame1Line : FrameworkLineDrawer
 {
     public override string name { get { return "ExampleFrame1"; } }
+    public override void OnGUI()
+    {
+        base.OnGUI();
+        if (GUILayout.Button("Say Type"))
+        {
+            Debug.Log(GetType().FullName);
+        }  
+    }
 }
 public class ExampleFrame2Line : FrameworkLineDrawer
 {
     public override string name { get { return "ExampleFrame2"; } }
+    public override void OnGUI()
+    {
+        base.OnGUI();
+        if (GUILayout.Button("Say Type"))
+        {
+            Debug.Log(GetType().FullName);
+        }
+    }
 }
 
 
