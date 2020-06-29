@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace MutiFramework
 {
+    /// <summary>
+    /// 运行时主入口
+    /// </summary>
     public class Frameworks : MonoBehaviour
     {
 //ToDo
@@ -14,13 +17,13 @@ namespace MutiFramework
         /// <summary>
         /// 容器
         /// </summary>
-        public static MutiFrameworkContaner _container;
+        public static MutiFrameworkContaner container;
         /// <summary>
         /// 开启
         /// </summary>
         static void Startup()
         {
-            _container = new MutiFrameworkContaner();
+            container = new MutiFrameworkContaner();
             var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany((a) => { return a.GetTypes(); });
             types
                  .Where((type) => {
@@ -34,7 +37,7 @@ namespace MutiFramework
                      return f;
                  }).ToList()
                  .ForEach((f) => {
-                     _container.Subscribe(f);
+                     container.Subscribe(f);
                  });
 
         }
@@ -45,21 +48,21 @@ namespace MutiFramework
         /// <returns></returns>
         public static Framework GetFramework(string name)
         {
-            return _container.Get(name);
+            return container.Get(name);
         }
         public void Start()
         {
             Startup();
-            _container.Startup();
+            container.Startup();
         }
         public void Update()
         {
-            _container.Update();
+            container.Update();
         }
         public void OnDisable()
         {
-            _container.Dispose();
-            _container = null;
+            container.Dispose();
+            container = null;
         }
     }
 }

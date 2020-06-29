@@ -4,6 +4,9 @@ using UnityEditor;
 
 namespace MutiFramework
 {
+    /// <summary>
+    /// 编辑器环境主入口
+    /// </summary>
     public static class EditorFrameworks
     {
 //ToDo
@@ -13,12 +16,12 @@ namespace MutiFramework
         /// <summary>
         /// 框架容器
         /// </summary>
-        public static MutiFrameworkContaner _container;
+        public static MutiFrameworkContaner container;
 
         [InitializeOnLoadMethod]
         static void Startup()
         {
-            _container = new MutiFrameworkContaner();
+            container = new MutiFrameworkContaner();
             var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany((a) => { return a.GetTypes(); });
             types
                  .Where((type) => {
@@ -32,13 +35,13 @@ namespace MutiFramework
                      return f;
                  }).ToList()
                  .ForEach((f) => {
-                     _container.Subscribe(f);
+                     container.Subscribe(f);
                  });
-            EditorApplication.update += _container.Update;
+            EditorApplication.update += container.Update;
 # if UNITY_2018_1_OR_NEWER
-            EditorApplication.quitting += _container.Dispose;
+            EditorApplication.quitting += container.Dispose;
 #endif
-            _container.Startup();
+            container.Startup();
         }
 
         /// <summary>
@@ -48,7 +51,7 @@ namespace MutiFramework
         /// <returns></returns>
         public static Framework GetFramework(string name)
         {
-            return _container.Get(name);
+            return container.Get(name);
         }
     }
 }
