@@ -42,6 +42,7 @@ class StandardExampleClass
 
 
 # How To Use
+
  ### Extend MutiFramework by your codes
  ``` csharp
  [Framework(Environment.Editor | Environment.Runtime)]    //which mode your Framework suport
@@ -86,6 +87,9 @@ public class ExampleFrame1Line : FrameworkLineDrawer
     public override string name { get { return "ExampleFrame1"; } }
 }
  ```
+ #### Result of EditorWindow Extension by codes
+ ![result](http://file.liangxiegame.com/8c6a9545-307d-4539-8ade-f3e2d1d46a62.png)
+ 
 # Framework to be accessed
 [IFramework(OnClick)](https://github.com/OnClick9927/IFramework)
 
