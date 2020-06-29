@@ -13,13 +13,6 @@ The Goal : Use multiple frames at the same time
   * Frameworks（The Frameworks in runtime Mode，The Editor Entrance of Framework that in project which supports runtime mode）
   * Framwork/UpdateFramework（extends this class when you import a Framework and you can use it）
   
-# Framework to be accessed
-[IFramework(OnClick)](https://github.com/OnClick9927/IFramework)
-
-# Frameworks that have been accessed
-
-
-  
 # Standard Code Example
 ``` csharp
 class StandardExampleClass
@@ -46,3 +39,58 @@ class StandardExampleClass
     }
 }
 ```
+
+
+# How To Use
+ ### Extend MutiFramework by your codes
+ ``` csharp
+ [Framework(Environment.Editor | Environment.Runtime)]    //which mode your Framework suport
+public class ExampleFrame1 : UpdateFramework
+{
+    public override string name => "ExampleFrame1";       // your Framework name
+
+    public override int priority => 8;            
+
+    public override void Dispose()
+    {
+    }
+
+    public override void Startup()
+    {
+    }
+
+    public override void Update()
+    {
+    }
+}
+ ```
+  ### Extend MutiFramework EditorWindow Tools by your codes
+ ``` csharp
+public class ExampleToolLine : ToolLineDrawer
+{
+    private Color _color;
+    public override string name => "ChooseColor";
+    public override void OnGUI()
+    {
+        base.OnGUI();
+        GUI.color = _color;
+        _color= UnityEditor.EditorGUILayout.ColorField(_color);
+        GUI.color = Color.white;
+    }
+}
+ ```
+   ### Extend MutiFramework EditorWindow Enterance of your EditorWindows by your codes
+ ``` csharp
+public class ExampleFrame1Line : FrameworkLineDrawer
+{
+    public override string name { get { return "ExampleFrame1"; } }
+}
+ ```
+# Framework to be accessed
+[IFramework(OnClick)](https://github.com/OnClick9927/IFramework)
+
+# Frameworks that have been accessed
+
+
+  
+
