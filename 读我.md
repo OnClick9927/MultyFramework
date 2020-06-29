@@ -52,16 +52,16 @@ public class ExampleFrame1 : UpdateFramework
 
     public override int priority => 8;            
 
-    public override void Dispose()
-    {
+    protected override void OnDispose()
+    {    
     }
 
-    public override void Startup()
-    {
+    protected override void OnStartup()
+    {   
     }
 
-    public override void Update()
-    {
+    protected override void OnUpdate()
+    {   
     }
 }
  ```
