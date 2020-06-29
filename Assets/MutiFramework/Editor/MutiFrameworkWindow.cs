@@ -62,15 +62,15 @@ namespace MutiFramework
                  .Where((type) => {
                      return !type.IsAbstract && type.IsSubclassOf(typeof(Framework)) &&
                          type.IsDefined(typeof(FrameworkAttribute), false) &&
-                         (type.GetCustomAttributes(typeof(FrameworkAttribute), false).First() as FrameworkAttribute).env.HasFlag(Environment.Editor);
+                         (type.GetCustomAttributes(typeof(FrameworkAttribute), false).First() as FrameworkAttribute).env.HasFlag(EnvironmentType.Editor);
                  })
                  .Select((type) => {
                      Framework f = Activator.CreateInstance(type) as Framework;
-                     f.env = Environment.Editor;
+                     f.env = EnvironmentType.Editor;
                      return f;
                  }).ToList()
                  .ForEach((f) => {
-                     add = add + "\t\tpublic static " + f.GetType() + " " + f.name + "{ get { return GetFrame(\"" + f.name + "\") as " + f.GetType() + ";}} \n";
+                     add = add + "\t\tpublic static " + f.GetType() + " " + f.name + "{ get { return GetFramework(\"" + f.name + "\") as " + f.GetType() + ";}} \n";
                      //_container.Subscribe(f);
                      f.Dispose();
                  });
@@ -91,15 +91,15 @@ namespace MutiFramework
                  .Where((type) => {
                      return !type.IsAbstract && type.IsSubclassOf(typeof(Framework)) &&
                          type.IsDefined(typeof(FrameworkAttribute), false) &&
-                         (type.GetCustomAttributes(typeof(FrameworkAttribute), false).First() as FrameworkAttribute).env.HasFlag(Environment.Runtime);
+                         (type.GetCustomAttributes(typeof(FrameworkAttribute), false).First() as FrameworkAttribute).env.HasFlag(EnvironmentType.Runtime);
                  })
                  .Select((type) => {
                      Framework f = Activator.CreateInstance(type) as Framework;
-                     f.env = Environment.Runtime;
+                     f.env = EnvironmentType.Runtime;
                      return f;
                  }).ToList()
                  .ForEach((f) => {
-                     add = add + "\t\tpublic static " + f.GetType() + " " + f.name + "{ get { return GetFrame(\"" + f.name + "\") as " + f.GetType() + ";}} \n";
+                     add = add + "\t\tpublic static " + f.GetType() + " " + f.name + "{ get { return GetFramework(\"" + f.name + "\") as " + f.GetType() + ";}} \n";
                      //_container.Subscribe(f);
                      f.Dispose();
                  });

@@ -4,16 +4,33 @@ using System;
 
 namespace MutiFramework
 {
+    /// <summary>
+    /// 框架容器
+    /// </summary>
     public class MutiFrameworkContaner : IDisposable
     {
+        /// <summary>
+        /// 框架集合
+        /// </summary>
         private Dictionary<string, Framework> _frameworks;
+        /// <summary>
+        /// 每帧刷新的框架
+        /// </summary>
         private List<UpdateFramework> _updates;
 
+        /// <summary>
+        /// ctor
+        /// </summary>
         public MutiFrameworkContaner()
         {
             _frameworks = new Dictionary<string, Framework>();
             _updates = new List<UpdateFramework>();
         }
+        /// <summary>
+        /// 通过名字获取一个框架
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public Framework Get(string name)
         {
             Framework f;
@@ -27,6 +44,9 @@ namespace MutiFramework
                 return null;
             }
         }
+        /// <summary>
+        /// 释放容器
+        /// </summary>
         public void Dispose()
         {
             _updates.Clear();
@@ -43,6 +63,9 @@ namespace MutiFramework
                 f.Dispose();
             }
         }
+        /// <summary>
+        /// 开启
+        /// </summary>
         public void Startup()
         {
             foreach (var item in _frameworks.Values)
@@ -50,6 +73,9 @@ namespace MutiFramework
                 item.Startup();
             }
         }
+        /// <summary>
+        /// 刷新
+        /// </summary>
         public void Update()
         {
             for (int i = 0; i < _updates.Count; i++)
@@ -58,6 +84,10 @@ namespace MutiFramework
                 f.Update();
             }
         }
+        /// <summary>
+        /// 注册框架
+        /// </summary>
+        /// <param name="framework"></param>
         public void Subscribe(Framework framework)
         {
             Framework f;
@@ -74,6 +104,10 @@ namespace MutiFramework
                 }
             }
         }
+        /// <summary>
+        /// 取消注册通过框架名字
+        /// </summary>
+        /// <param name="name"></param>
         public void UnSubscribe(string name)
         {
             Framework f;

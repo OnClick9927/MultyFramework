@@ -1,40 +1,46 @@
 ﻿using MutiFramework;
 
-[Framework(Environment.Editor | Environment.Runtime)]
+[Framework(EnvironmentType.Editor | EnvironmentType.Runtime)]
 public class ExampleFrame1 : UpdateFramework
 {
     public override string name => "ExampleFrame1";
 
     public override int priority => 8;
 
-    public override void Dispose()
+    protected override void OnDispose()
     {
+        
     }
 
-    public override void Startup()
+    protected override void OnStartup()
     {
+       
     }
 
-    public override void Update()
+    protected override void OnUpdate()
     {
+        
     }
 }
-[Framework(Environment.Runtime)]
+[Framework(EnvironmentType.Runtime)]
 public class ExampleFrame2 : UpdateFramework
 {
     public override string name => "ExampleFrame2";
 
     public override int priority => 8;
 
-    public override void Dispose()
+    protected override void OnDispose()
     {
+
     }
 
-    public override void Startup()
+    protected override void OnStartup()
     {
+
     }
 
-    public override void Update()
+    protected override void OnUpdate()
     {
+
     }
 }

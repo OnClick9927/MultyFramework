@@ -7,10 +7,17 @@ namespace MutiFramework
     public class Frameworks : MonoBehaviour
     {
 //ToDo
-		public static ExampleFrame1 ExampleFrame1{ get { return GetFrame("ExampleFrame1") as ExampleFrame1;}} 
-		public static ExampleFrame2 ExampleFrame2{ get { return GetFrame("ExampleFrame2") as ExampleFrame2;}} 
+		public static ExampleFrame1 ExampleFrame1{ get { return GetFramework("ExampleFrame1") as ExampleFrame1;}} 
+		public static ExampleFrame2 ExampleFrame2{ get { return GetFramework("ExampleFrame2") as ExampleFrame2;}} 
 //ToDo
-        private static MutiFrameworkContaner _container;
+
+        /// <summary>
+        /// ÈÝÆ÷
+        /// </summary>
+        public static MutiFrameworkContaner _container;
+        /// <summary>
+        /// ¿ªÆô
+        /// </summary>
         static void Startup()
         {
             _container = new MutiFrameworkContaner();
@@ -19,11 +26,11 @@ namespace MutiFramework
                  .Where((type) => {
                      return !type.IsAbstract && type.IsSubclassOf(typeof(Framework)) &&
          type.IsDefined(typeof(FrameworkAttribute), false) &&
-         (type.GetCustomAttributes(typeof(FrameworkAttribute), false).First() as FrameworkAttribute).env.HasFlag(Environment.Editor);
+         (type.GetCustomAttributes(typeof(FrameworkAttribute), false).First() as FrameworkAttribute).env.HasFlag(EnvironmentType.Editor);
                  })
                  .Select((type) => {
                      Framework f = Activator.CreateInstance(type) as Framework;
-                     f.env = Environment.Editor;
+                     f.env = EnvironmentType.Editor;
                      return f;
                  }).ToList()
                  .ForEach((f) => {
@@ -31,7 +38,12 @@ namespace MutiFramework
                  });
 
         }
-        private static Framework GetFrame(string name)
+        /// <summary>
+        /// »ñÈ¡¿ò¼Ü
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static Framework GetFramework(string name)
         {
             return _container.Get(name);
         }
