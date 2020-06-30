@@ -1,22 +1,19 @@
 ﻿#if MutiFramework
-using System;
-
 namespace MutiFramework
 {
     /// <summary>
-    /// 环境
+    /// 切分方式
     /// </summary>
-    [Flags]
-    public enum EnvironmentType
+    public enum SplitType
     {
         /// <summary>
-        /// 运行时
+        /// 纵向
         /// </summary>
-        Runtime = 1,
+        Vertical,
         /// <summary>
-        /// 编辑器模式
+        /// 横向
         /// </summary>
-        Editor = 2
+        Horizontal
     }
 }
 

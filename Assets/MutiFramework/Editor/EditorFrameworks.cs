@@ -1,20 +1,17 @@
+Ôªø#if MutiFramework
 using System;
 using System.Linq;
 using UnityEditor;
-
 namespace MutiFramework
 {
-    /// <summary>
-    /// ±‡º≠∆˜ª∑æ≥÷˜»Îø⁄
-    /// </summary>
-    public static class EditorFrameworks
+    public class EditorFrameworks
     {
 //ToDo
-        public static ExampleFrame1 ExampleFrame1 { get { return GetFramework("ExampleFrame1") as ExampleFrame1; } }
+		public static ExampleFrame1 ExampleFrame1{ get { return GetFramework("ExampleFrame1") as ExampleFrame1;}} 
 //ToDo
 
         /// <summary>
-        /// øÚº‹»›∆˜
+        /// Ê°ÜÊû∂ÂÆπÂô®
         /// </summary>
         public static MutiFrameworkContaner container;
 
@@ -38,14 +35,14 @@ namespace MutiFramework
                      container.Subscribe(f);
                  });
             EditorApplication.update += container.Update;
-# if UNITY_2018_1_OR_NEWER
+#if UNITY_2018_1_OR_NEWER
             EditorApplication.quitting += container.Dispose;
 #endif
             container.Startup();
         }
 
         /// <summary>
-        /// ªÒ»°øÚº‹
+        /// Ëé∑ÂèñÊ°ÜÊû∂
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
@@ -55,3 +52,5 @@ namespace MutiFramework
         }
     }
 }
+
+#endif

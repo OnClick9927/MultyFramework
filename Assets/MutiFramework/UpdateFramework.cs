@@ -1,4 +1,5 @@
-﻿namespace MutiFramework
+﻿#if MutiFramework
+namespace MutiFramework
 {
     /// <summary>
     /// 需要不断刷新的框架
@@ -19,4 +20,4 @@
         protected abstract void OnUpdate();
     }
 }
-
+#endif

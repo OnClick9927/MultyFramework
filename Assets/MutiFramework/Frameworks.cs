@@ -1,3 +1,4 @@
+ï»¿#if MutiFramework
 using System;
 using System.Linq;
 using UnityEngine;
@@ -5,7 +6,7 @@ using UnityEngine;
 namespace MutiFramework
 {
     /// <summary>
-    /// ÔËĞĞÊ±Ö÷Èë¿Ú
+    /// æ¡†æ¶å…¥å£
     /// </summary>
     public class Frameworks : MonoBehaviour
     {
@@ -15,11 +16,11 @@ namespace MutiFramework
 //ToDo
 
         /// <summary>
-        /// ÈİÆ÷
+        /// æ¡†æ¶å®¹å™¨
         /// </summary>
         public static MutiFrameworkContaner container;
         /// <summary>
-        /// ¿ªÆô
+        /// å¼€å¯
         /// </summary>
         static void Startup()
         {
@@ -42,7 +43,7 @@ namespace MutiFramework
 
         }
         /// <summary>
-        /// »ñÈ¡¿ò¼Ü
+        /// è·å–æ¡†æ¶
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
@@ -67,3 +68,4 @@ namespace MutiFramework
     }
 }
 
+#endif
