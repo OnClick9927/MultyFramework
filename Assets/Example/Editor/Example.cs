@@ -67,7 +67,7 @@ public class ExampleToolLine : ToolDrawer
 
     public override string assetPath { get { return "Assets"; } }
 
-    private Color _color;
+    private Color _color=Color.white;
 
 
     protected override void ToolGUI()
@@ -75,7 +75,7 @@ public class ExampleToolLine : ToolDrawer
         GUILayout.Space(10);
         _color = UnityEditor.EditorGUILayout.ColorField("Box Color",_color);
         GUI.color = _color;
-        GUILayout.Box("Box");
+        GUILayout.Box("Box",GUILayout.Width(100),GUILayout.Height(100));
         GUI.color = Color.white;
     }
 }
