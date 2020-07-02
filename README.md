@@ -2,14 +2,14 @@
 # Describtion
 The starter of some frameworks   
 The Goal : Use multiple frames at the same time
-
+# 🥚Coming 
+* download/ update/upload codes
 # Framework Structure
 * Editor
   * EditorFrameworks（The Frameworks in Editor mode，The Editor Entrance of Framework that in project which supports Editor mode）
   * Window
-    * FrameworkLineDrawer （The Editorwindow line of Frameworks that in project  ）
-    * ToolLineDrawer（The Editorwindow line of tools that in project）
-    * 🥚FrameworkCollectionLineDrawer（Coming soon   |  Frameworks  download /cleaar/update  ）
+    * FrameworkDrawer （The Editorwindow view of Frameworks that in project  ）
+    * ToolDrawer（The Editorwindow view of tools that in project）
 * Runtime
   * Frameworks（The Frameworks in runtime Mode，The Editor Entrance of Framework that in project which supports runtime mode）
   * Framwork/UpdateFramework（extends this class when you import a Framework and you can use it）
@@ -43,7 +43,8 @@ class StandardExampleClass
 
 
 # How To Use
-
+ ###  Do Not Forget Add Macro definition MutiFramework
+![result](http://file.liangxiegame.com/4578b0b9-2975-4a0e-b89a-26c1be7ddf65.png)
  ### Extend MutiFramework by your codes
  ``` csharp
  [Framework(Environment.Editor | Environment.Runtime)]    //which mode your Framework suport
@@ -68,29 +69,68 @@ public class ExampleFrame1 : UpdateFramework
  ```
   ### Extend MutiFramework EditorWindow Tools by your codes
  ``` csharp
-public class ExampleToolLine : ToolLineDrawer
+public class ExampleToolLine : ToolDrawer
 {
-    private Color _color;
-    public override string name => "ChooseColor";
-    public override void OnGUI()
+    public override string name { get { return "ChooseColor"; } }
+
+    public override string version { get { return "1"; } }
+
+    public override string author { get { return "author"; } }
+
+    public override string describtion { get { return "we\n" +
+                "can\n" +
+                "choose\n" +
+                "color\n" +
+                "of\n" +
+                "the\n" +
+                "box\n"
+                ;
+        }
+    }
+
+    public override string assetPath { get { return "Assets"; } }
+
+    private Color _color=Color.white;
+
+
+    protected override void ToolGUI()
     {
-        base.OnGUI();
+        GUILayout.Space(10);
+        _color = UnityEditor.EditorGUILayout.ColorField("Box Color",_color);
         GUI.color = _color;
-        _color= UnityEditor.EditorGUILayout.ColorField(_color);
+        GUILayout.Box("Box",GUILayout.Width(100),GUILayout.Height(100));
         GUI.color = Color.white;
     }
 }
  ```
    ### Extend MutiFramework EditorWindow Enterance of your EditorWindows by your codes
  ``` csharp
-public class ExampleFrame1Line : FrameworkLineDrawer
+public class ExampleFrame2Drawer : FrameworkDrawer
 {
-    public override string name { get { return "ExampleFrame1"; } }
+    public override string name { get { return "ExampleFrame2"; } }
+
+    public override string version { get { return "1"; } }
+
+    public override string author { get { return "author"; } }
+
+    public override string describtion { get { return "describtion"; } }
+
+    public override string assetPath { get { return "Assets"; } }
+
+    public override void FrameworkGUI()
+    {
+        if (GUILayout.Button("Say Type"))
+        {
+            Debug.Log(GetType().FullName);
+        }
+    }
+
+  
 }
  ```
  #### Result of EditorWindow Extension by codes
- ![result](http://file.liangxiegame.com/8c6a9545-307d-4539-8ade-f3e2d1d46a62.png)
- 
+ ![result](http://file.liangxiegame.com/8d019686-a36b-4930-89ea-8b7c469863bb.png)
+![result](http://file.liangxiegame.com/1a1caa23-8a38-4ba1-b914-3b82b763c7ed.png)
 # Framework to be accessed
 🥚[IFramework(OnClick)](https://github.com/OnClick9927/IFramework)
 

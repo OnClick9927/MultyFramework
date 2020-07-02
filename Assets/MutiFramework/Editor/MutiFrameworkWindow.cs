@@ -574,9 +574,9 @@ namespace MutiFramework
                 {
                     rect = GUILayoutUtility.GetLastRect();
 
-                    rect = new Rect(0, rect.yMax, position.width, position.height - rect.height);
+                    rect = new Rect(0, rect.yMax, position.width, position.height - rect.yMax); 
                     GUI.BeginClip(rect);
-                    WebView(new Rect(Vector2.zero, rect.size).Zoom(AnchorType.UpperCenter,new Vector2(0,-150)));
+                    WebView(new Rect(Vector2.zero, rect.size).Zoom(AnchorType.UpperCenter,new Vector2(0,-10)));
                     GUI.EndClip();
                 }
                 else
