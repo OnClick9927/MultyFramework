@@ -3,7 +3,7 @@
 The starter of some frameworks   
 The Goal : Use multiple frames at the same time
 # 🥚Coming 
- download/ update/upload codes
+* download/ update/upload codes
 # Framework Structure
 * Editor
   * EditorFrameworks（The Frameworks in Editor mode，The Editor Entrance of Framework that in project which supports Editor mode）
@@ -43,7 +43,8 @@ class StandardExampleClass
 
 
 # How To Use
-
+ ###  Do Not Forget Add Macro definition MutiFramework
+![result](http://file.liangxiegame.com/4578b0b9-2975-4a0e-b89a-26c1be7ddf65.png)
  ### Extend MutiFramework by your codes
  ``` csharp
  [Framework(Environment.Editor | Environment.Runtime)]    //which mode your Framework suport
