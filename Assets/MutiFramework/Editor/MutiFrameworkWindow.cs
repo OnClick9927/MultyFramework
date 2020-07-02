@@ -40,7 +40,7 @@ namespace MutiFramework
             }
             public override string[] dependences { get { return _dependences; } }
 
-            public CollectionDrawer(string name, string version, string author, string describtion, string assetPath, string[] dependences, string helpurl, string unityVersion,string downloadUrl)
+            public CollectionDrawer(string name, string version, string author, string describtion, string assetPath, string[] dependences, string helpurl, string unityVersion, string downloadUrl)
             {
                 _name = name;
                 _version = version;
@@ -163,36 +163,46 @@ namespace MutiFramework
             private void InstallPakage(CollectionInfo info)
             {
                 MutiFrameworkWindowUtil.InstallPakage(info);
-            } 
+            }
             protected virtual void RemovePakage(string path)
             {
                 MutiFrameworkWindowUtil.RemovePakage(path);
             }
             public static implicit operator CollectionDrawer(CollectionInfo info)
             {
-                return new CollectionDrawer(info.name, info.version, info.author, info.describtion, info.assetPath, info.dependences, info.helpurl, info.unityVersion,info.downloadUrl);
+                return new CollectionDrawer(info.name, info.version, info.author, info.describtion, info.assetPath, info.dependences, info.helpurl, info.unityVersion, info.downloadUrl);
             }
             public static implicit operator CollectionInfo(CollectionDrawer drawer)
             {
-                return new CollectionInfo(drawer.name, drawer.version, drawer.author, drawer.describtion, drawer.assetPath, drawer.dependences, drawer.helpurl, drawer.unityVersion,drawer.downloadUrl);
+                return new CollectionInfo(drawer.name, drawer.version, drawer.author, drawer.describtion, drawer.assetPath, drawer.dependences, drawer.helpurl, drawer.unityVersion, drawer.downloadUrl);
             }
         }
         class Styles
         {
             public static GUIStyle box = "box";
-            public static GUIStyle in_title = new GUIStyle("IN Title") { fixedHeight=25};
+            public static GUIStyle in_title = new GUIStyle("IN Title") { fixedHeight = toolbarHeight + 5 };
             public static GUIStyle settingsHeader = "SettingsHeader";
             public static GUIStyle header = "DD HeaderStyle";
-            public static GUIStyle searchTextField = "SearchTextField";
-            public static GUIStyle searchCancelButton = "SearchCancelButton";
-            public static GUIStyle searchCancelButtonEmpty = "SearchCancelButtonEmpty";
+            public static GUIStyle toolbarSeachTextFieldPopup = "ToolbarSeachTextFieldPopup";
+            public static GUIStyle searchTextField = new GUIStyle("ToolbarTextField")
+            {
+                margin = new RectOffset(0, 0, 2, 0)
+            };
+            public static GUIStyle searchCancelButton = "ToolbarSeachCancelButton";
+            public static GUIStyle searchCancelButtonEmpty = "ToolbarSeachCancelButtonEmpty";
             public static GUIStyle foldout = "Foldout";
-            public static GUIStyle toolbar = new GUIStyle("Toolbar") { fixedHeight = 20 }; 
+            public static GUIStyle toolbar = new GUIStyle("Toolbar") { fixedHeight = toolbarHeight };
             public static GUIStyle ToolbarDropDown = "ToolbarDropDown";
             public static GUIStyle selectionRect = "SelectionRect";
 
         }
-
+        public enum SearchType
+        {
+            Name,
+            Author,
+            Describtion,
+            Dependence
+        }
         private enum WindowSelectType
         {
             ReadMe,
@@ -236,7 +246,7 @@ namespace MutiFramework
             private bool _resizing;
             public void OnGUI(Rect position)
             {
-                var rs = position.Split(_splitType, _split, 4); 
+                var rs = position.Split(_splitType, _split, 4);
                 var mid = position.SplitRect(_splitType, _split, 4);
                 if (fistPan != null)
                 {
@@ -314,7 +324,7 @@ namespace MutiFramework
 
         private List<DescriptionGUIDrawer> GetCollection()
         {
-            return MutiFrameworkWindowUtil.GetCollections().ConvertAll((info)=> {
+            return MutiFrameworkWindowUtil.GetCollections().ConvertAll((info) => {
                 CollectionDrawer drawer = info;
                 return drawer as DescriptionGUIDrawer;
             });
@@ -329,7 +339,6 @@ namespace MutiFramework
             switch (_windowSelectType)
             {
                 case WindowSelectType.ReadMe:
-                   // DescibtionAndBaseToolLeftView();
                     break;
                 case WindowSelectType.FrameworksInProject:
                     FrameworksInProjectLeftView(_search);
@@ -354,7 +363,6 @@ namespace MutiFramework
             switch (_windowSelectType)
             {
                 case WindowSelectType.ReadMe:
-                   // DescibtionAndBaseToolRightView(rect);
                     break;
                 case WindowSelectType.FrameworkCollection:
                 case WindowSelectType.FrameworksInProject:
@@ -367,30 +375,61 @@ namespace MutiFramework
             GUI.EndClip();
         }
 
-        private void LeftSelectView(string search,List<DescriptionGUIDrawer> guis)
+        private void LeftSelectView(string search, List<DescriptionGUIDrawer> guis)
         {
             if (guis == null || guis.Count == 0) return;
             for (int i = 0; i < guis.Count; i++)
             {
-                if (string.IsNullOrEmpty(search) || guis[i].name.ToLower().Contains(search.ToLower()))
+                var drawer = guis[i];
+                bool show = string.IsNullOrEmpty(search);
+                if (!show)
                 {
-                    GUILayout.BeginHorizontal(Styles.in_title);
-                    GUILayout.Label(guis[i].name);
-                    GUILayout.FlexibleSpace();
-                    GUILayout.Label("v " + guis[i].version);
-                    GUILayout.EndHorizontal();
-                    Rect rect = GUILayoutUtility.GetLastRect();
-                    if (_selectDrawer == guis[i])
+                    switch (_searchType)
                     {
-                        GUI.Box(rect, "", Styles.selectionRect);
+                        case SearchType.Name:
+                            show = drawer.name.ToLower().Contains(search.ToLower());
+                            break;
+                        case SearchType.Author:
+                            show =  drawer.author.ToLower().Contains(search.ToLower());
+                            break;
+                        case SearchType.Describtion:
+                            show = drawer.describtion.ToLower().Contains(search.ToLower());
+                            break;
+                        case SearchType.Dependence:
+                            if (drawer.dependences != null)
+                            {
+                                for (int j = 0; j < drawer.dependences.Length; j++)
+                                {
+                                    if (drawer.dependences[j].ToLower().Contains(search.ToLower()))
+                                    {
+                                        show = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            break;
+                        default:
+                            break;
                     }
-                    if (rect.Contains(Event.current.mousePosition) && Event.current.type == EventType.MouseUp)
-                    {
-                        _selectDrawer = guis[i];
-                        Event.current.Use();
-                    }
-                    GUILayout.Label("", Styles.in_title, GUILayout.Height(0));
+
                 }
+                if (!show) continue;
+                GUILayout.BeginHorizontal(Styles.in_title);
+                GUILayout.Label(drawer.name);
+                GUILayout.FlexibleSpace();
+                GUILayout.Label("v " + drawer.version);
+                GUILayout.EndHorizontal();
+                Rect rect = GUILayoutUtility.GetLastRect();
+                if (_selectDrawer == drawer)
+                {
+                    GUI.Box(rect, "", Styles.selectionRect);
+                }
+                if (rect.Contains(Event.current.mousePosition) && Event.current.type == EventType.MouseUp)
+                {
+                    _selectDrawer = drawer;
+                    Event.current.Use();
+                }
+                GUILayout.Label("", Styles.in_title, GUILayout.Height(0));
             }
         }
         private void RightSelectView(Rect rect)
@@ -410,8 +449,8 @@ namespace MutiFramework
             LeftSelectView(search, _frameworks);
         }
         private void FrameworksCollectionLeftView(string search)
-        { 
-            LeftSelectView(search, _Collection );
+        {
+            LeftSelectView(search, _Collection);
         }
 
         private void OnSelectWindowTypeChange(WindowSelectType value)
@@ -447,24 +486,29 @@ namespace MutiFramework
             get { return __windowSelectType; }
             set
             {
-                if (__windowSelectType!=value)
+                if (__windowSelectType != value)
                 {
                     __windowSelectType = value;
                     OnSelectWindowTypeChange(value);
                 }
             }
         }
-        private DescriptionGUIDrawer _selectDrawer { get { return __selectDrawer; }
-            set {
-                if (__selectDrawer!=value)
+        private DescriptionGUIDrawer _selectDrawer
+        {
+            get { return __selectDrawer; }
+            set
+            {
+                if (__selectDrawer != value)
                 {
                     if (__selectDrawer != null)
                     {
                         __selectDrawer.OnDisable();
+                        _selectDrawer.window = null;
                     }
                     __selectDrawer = value;
                     if (__selectDrawer != null)
                     {
+                        _selectDrawer.window = this;
                         __selectDrawer.OnEnable();
                     }
                 }
@@ -472,38 +516,22 @@ namespace MutiFramework
         }
         private DescriptionGUIDrawer __selectDrawer;
 
-        [SerializeField] private SplitView _splitView;
-        [SerializeField] private WindowSelectType __windowSelectType;
-        [SerializeField] private Vector2 _scroll;
-        [SerializeField] private string _search;
-        private bool _fold0;
-        private bool _fold1;
+        private SearchType _searchType;
+        private SplitView _splitView;
+        private WindowSelectType __windowSelectType;
+        private string _search;
 
-
-
-        private const float searchTxtWith = 200;
-        private const float btnWith=20;
+        private const float searchTxtWith = 300;
+        private const float toolbarHeight = 20;
         private const float gap = 10;
     }
     partial class MutiFrameworkWindow
     {
 
-        private void BaseView()
-        {
-            GUILayout.Label("1、write custom Framework class extends Framework/UpdateFramework with Attribute(Framework)\n" +
-                            "2、write custom Framework GUI extends FrameworkDrawer if you need\n" +
-                            "3、write custom Tool GUI extends ToolDrawer if you need\n" +
-                            "4、click update Script Button and wait for seconds", Styles.settingsHeader);
-            GUILayout.Space(gap);
-            if (GUILayout.Button("Update Script"))
-            {
-                if (!EditorApplication.isCompiling)
-                {
-                    MutiFrameworkWindowUtil.CreateClass();
-                }
-            }
-        }
-        private void WebView(Rect rect)
+
+        private WebViewHook _webView;
+        private string _url;
+        private void ReadMe(Rect rect)
         {
             // hook to this window
             if (_webView.Hook(this))
@@ -513,7 +541,7 @@ namespace MutiFramework
             // Navigation
             if (GUI.Button(new Rect(rect.x, rect.y, 25, 20), "<"))
                 _webView.Back();
-            if (GUI.Button(new Rect(rect.x+25, rect.y, 25, 20), ">"))
+            if (GUI.Button(new Rect(rect.x + 25, rect.y, 25, 20), ">"))
                 _webView.Forward();
             if (GUI.Button(new Rect(rect.x + 50, rect.y, 25, 20), new GUIContent(EditorGUIUtility.IconContent("refresh"))))
                 _webView.Reload();
@@ -540,58 +568,9 @@ namespace MutiFramework
             if (ev.type == EventType.Repaint)
             {
                 // keep the browser aware with resize
-                _webView.OnGUI(rect.Zoom(AnchorType.LowerCenter, -20));
+                _webView.OnGUI(rect.Zoom(AnchorType.LowerCenter, new Vector2(0, -20)));
             }
         }
-        private void DescibtionAndBaseToolView()
-        {
-            {
-                GUILayout.Label("Descibtion and base Tool", Styles.in_title);
-                var rect = GUILayoutUtility.GetLastRect();
-                _fold0 = GUI.Toggle(new Rect(rect.position, new Vector2(gap, rect.height)), _fold0, "", Styles.foldout);
-                if (new Rect(rect.position, new Vector2(rect.width - searchTxtWith - btnWith * 2, rect.height)).Contains(Event.current.mousePosition) && Event.current.type == EventType.MouseUp)
-                {
-                    _fold0 = !_fold0;
-                    Event.current.Use();
-                }
-
-                if (_fold0)
-                {
-                    BaseView();
-                }
-            }
-            {
-                GUILayout.Label("Learn More with MutiFramework", Styles.in_title);
-                var rect = GUILayoutUtility.GetLastRect();
-                _fold1 = GUI.Toggle(new Rect(rect.position, new Vector2(gap, rect.height)), _fold1, "", Styles.foldout);
-                if (new Rect(rect.position, new Vector2(rect.width - searchTxtWith - btnWith * 2, rect.height)).Contains(Event.current.mousePosition) && Event.current.type == EventType.MouseUp)
-                {
-                    _fold1 = !_fold1;
-                    Event.current.Use();
-                }
-
-                if (_fold1) 
-                {
-                    rect = GUILayoutUtility.GetLastRect();
-
-                    rect = new Rect(0, rect.yMax, position.width, position.height - rect.yMax); 
-                    GUI.BeginClip(rect);
-                    WebView(new Rect(Vector2.zero, rect.size).Zoom(AnchorType.UpperCenter,new Vector2(0,-10)));
-                    GUI.EndClip();
-                }
-                else
-                {
-                    HideWebView();
-                }
-
-
-            }
-           
-
-        }
-
-        private WebViewHook _webView;
-        private string _url = "https://www.baidu.com";
         public void HideWebView()
         {
             if (_webView)
@@ -599,14 +578,19 @@ namespace MutiFramework
                 _webView.Detach();
             }
         }
+
+
+
+
         private void OnEnable()
         {
+            _url = MutiFrameworkWindowUtil.frameworkUrl;
             this.titleContent = new GUIContent("MutiFramework");
             if (!_webView)
             {
                 _webView = CreateInstance<WebViewHook>();
             }
-            if (_splitView==null)
+            if (_splitView == null)
             {
                 _splitView = new SplitView();
             }
@@ -622,45 +606,49 @@ namespace MutiFramework
             _selectDrawer = null;
         }
         private void OnGUI()
-        { 
-            GUILayout.BeginHorizontal(Styles.toolbar, GUILayout.Width(position.width));
+        {
             {
+                GUILayout.BeginHorizontal(Styles.toolbar, GUILayout.Width(position.width));
                 _windowSelectType = (WindowSelectType)EditorGUILayout.EnumPopup(_windowSelectType, Styles.ToolbarDropDown);
                 GUILayout.FlexibleSpace();
-                _search = GUILayout.TextField(_search, Styles.searchTextField, GUILayout.MinWidth(searchTxtWith));
-                if (string.IsNullOrEmpty(_search))
+
+                if (_windowSelectType != WindowSelectType.ReadMe)
                 {
-                    GUILayout.Label("", Styles.searchCancelButtonEmpty);
+                    _searchType = (SearchType)EditorGUILayout.EnumPopup(_searchType, Styles.toolbarSeachTextFieldPopup, GUILayout.Width(gap + 5));
+                    _search = GUILayout.TextField(_search, Styles.searchTextField, GUILayout.Width(searchTxtWith));
+                    if (string.IsNullOrEmpty(_search))
+                    {
+                        GUILayout.Label("", Styles.searchCancelButtonEmpty);
+                    }
+                    else
+                    {
+                        if (GUILayout.Button("", Styles.searchCancelButton))
+                        {
+                            _search = string.Empty;
+                        }
+                    }
+
+                }
+                GUILayout.Label(DateTime.Now.ToLongTimeString(), Styles.selectionRect);
+
+                GUILayout.EndHorizontal();
+            }
+            {
+                if (_windowSelectType == WindowSelectType.ReadMe)
+                {
+                    ReadMe(new Rect(new Vector2(0, toolbarHeight), position.size));
                 }
                 else
                 {
-                    if (GUILayout.Button("", Styles.searchCancelButton))
-                    {
-                        _search = string.Empty;
-                    }
+                    Rect r = GUILayoutUtility.GetLastRect();
+                    _splitView.OnGUI(new Rect(new Vector2(0, r.yMax),
+                          new Vector2(position.width, position.height - r.height)));
                 }
-                GUILayout.EndHorizontal();
             }
-
-            if (_windowSelectType== WindowSelectType.ReadMe)
-            {
-                DescibtionAndBaseToolView();
-            }
-            else
-            {
-                Rect r = GUILayoutUtility.GetLastRect();
-                _splitView.OnGUI(new Rect(new Vector2(0, r.yMax + 2),
-                      new Vector2(position.width, position.height - r.height)));
-            }
-
             Repaint();
         }
-
-
-
         void OnDestroy()
         {
-            //Destroy web view
             DestroyImmediate(_webView);
         }
     }

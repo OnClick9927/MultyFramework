@@ -1,4 +1,5 @@
 ﻿#if MutiFramework
+using UnityEditor;
 using UnityEngine;
 
 namespace MutiFramework
@@ -17,7 +18,7 @@ namespace MutiFramework
         }
         protected class Contents
         {
-            public static GUIContent help = UnityEditor.EditorGUIUtility.IconContent("_Help");
+            public static GUIContent help = EditorGUIUtility.IconContent("_Help");
         }
 
         /// <summary>
@@ -53,6 +54,19 @@ namespace MutiFramework
         /// 所在位置
         /// </summary>
         protected Rect position { get; private set; }
+        /// <summary>
+        /// 所属窗体
+        /// </summary>
+        public EditorWindow window { get; set; }
+        /// <summary>
+        /// 输出提示
+        /// </summary>
+        /// <param name="message"></param>
+        protected void ShowNotification(string message)
+        {
+            window.ShowNotification(new GUIContent(message));
+        }
+
         /// <summary>
         /// 绘制
         /// </summary>

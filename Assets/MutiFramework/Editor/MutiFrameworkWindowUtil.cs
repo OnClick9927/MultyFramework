@@ -10,6 +10,8 @@ namespace MutiFramework
 {
     class MutiFrameworkWindowUtil
     {
+        public const string frameworkUrl = "https://www.baidu.com";
+
         internal static void CreateClass()
         {
 
