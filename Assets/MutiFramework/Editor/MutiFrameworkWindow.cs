@@ -491,8 +491,8 @@ namespace MutiFramework
         private void BaseView()
         {
             GUILayout.Label("1、write custom Framework class extends Framework/UpdateFramework with Attribute(Framework)\n" +
-                            "2、write custom Framework GUI extends FrameworkLineDrawer if you need\n" +
-                            "3、write custom Tool GUI extends ToolLineDrawer if you need\n" +
+                            "2、write custom Framework GUI extends FrameworkDrawer if you need\n" +
+                            "3、write custom Tool GUI extends ToolDrawer if you need\n" +
                             "4、click update Script Button and wait for seconds", Styles.settingsHeader);
             GUILayout.Space(gap);
             if (GUILayout.Button("Update Script"))

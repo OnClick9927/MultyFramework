@@ -1,5 +1,4 @@
 ﻿#if MutiFramework
-using System;
 using UnityEngine;
 
 namespace MutiFramework
