@@ -4,13 +4,14 @@ using UnityEngine;
 namespace MutiFramework
 {
     /// <summary>
-    /// 绘制项目内框架界面
+    /// 绘制工具栏目
     /// </summary>
-    public abstract class FrameworkDrawer: DescriptionGUIDrawer
+    public abstract class ToolDrawer:PanelGUIDrawer
     {
-        private bool _describtionFold=true;
+        private bool _describtionFold = true;
         private bool _dependencesFold = true;
         private Vector2 _scroll;
+
 
         public override void OnGUI(Rect rect)
         {
@@ -21,17 +22,13 @@ namespace MutiFramework
                 {
                     GUILayout.BeginHorizontal();
                     GUILayout.Label(name, Styles.header);
-                    if (GUILayout.Button(Contents.help, Styles.controlLabel)) 
+                    if (GUILayout.Button(Contents.help, Styles.controlLabel))
                     {
                         UnityEditor.Help.BrowseURL(helpurl);
                     }
-                    GUILayout.Space(10);
+                    GUILayout.Space(Contents.gap);
                     GUILayout.Label(Application.unityVersion);
                     GUILayout.FlexibleSpace();
-                    if (GUILayout.Button("Remove"))
-                    {
-                        RemoveFramework(assetPath);
-                    }
                     GUILayout.EndHorizontal();
                 }
 
@@ -41,15 +38,15 @@ namespace MutiFramework
                 {
                     GUILayout.Label("Dependences", Styles.in_title);
                     Rect last = GUILayoutUtility.GetLastRect();
-                    last.width -= 10;
-                    last.xMin += 10;
+                    last.width -= Contents.gap;
+                    last.xMin += Contents.gap;
                     if (Event.current.type == EventType.MouseUp && last.Contains(Event.current.mousePosition))
                     {
                         _dependencesFold = !_dependencesFold;
                         Event.current.Use();
                     }
-                    last.xMin -= 10;
-                    last.width = 10;
+                    last.xMin -= Contents.gap;
+                    last.width = Contents.gap;
 
                     _dependencesFold = UnityEditor.EditorGUI.Foldout(last, _dependencesFold, "");
                     if (_dependencesFold)
@@ -66,15 +63,15 @@ namespace MutiFramework
                 {
                     GUILayout.Label("Describtion ", Styles.in_title);
                     Rect last = GUILayoutUtility.GetLastRect();
-                    last.width -= 10;
-                    last.xMin += 10;
+                    last.width -= Contents.gap;
+                    last.xMin += Contents.gap;
                     if (Event.current.type == EventType.MouseUp && last.Contains(Event.current.mousePosition))
                     {
                         _describtionFold = !_describtionFold;
                         Event.current.Use();
                     }
-                    last.xMin -= 10;
-                    last.width = 10;
+                    last.xMin -= Contents.gap;
+                    last.width = Contents.gap;
                     _describtionFold = UnityEditor.EditorGUI.Foldout(last, _describtionFold, "");
                     if (_describtionFold)
                     {
@@ -82,29 +79,19 @@ namespace MutiFramework
                     }
                 }
                 GUILayout.Label("", Styles.in_title, GUILayout.Height(0));
-
-
-                FrameworkGUI();
-
-
-
+                ToolGUI();
                 GUILayout.EndScrollView();
             }
             GUILayout.EndArea();
+        }
 
-        }
         /// <summary>
-        /// 自身绘制
+        /// 自身的界面
         /// </summary>
-        public abstract void FrameworkGUI();
-        /// <summary>
-        /// 移除这个内容
-        /// </summary>
-        /// <param name="path"></param>
-        protected virtual void RemoveFramework(string path)
-        {
-            MutiFrameworkWindowUtil.RemovePakage(path);
-        }
-    } 
+        protected abstract void ToolGUI();
+
+    }
+
 }
+
 #endif

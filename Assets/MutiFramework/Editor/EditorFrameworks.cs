@@ -6,7 +6,7 @@ namespace MutiFramework
 {
     public class EditorFrameworks
     {
-//ToDo
+        //ToDo
 		public static ExampleFrame1 ExampleFrame1{ get { return GetFramework("ExampleFrame1") as ExampleFrame1;}} 
 //ToDo
 
@@ -35,10 +35,12 @@ namespace MutiFramework
                      container.Subscribe(f);
                  });
             EditorApplication.update += container.Update;
-#if UNITY_2018_1_OR_NEWER
-            EditorApplication.quitting += container.Dispose;
-#endif
+            UnityEditor.Compilation.CompilationPipeline.assemblyCompilationStarted += (str) => {
+                container.Dispose();
+                UnityEngine.Debug.Log("EditorFrameworks Dispose");
+            };
             container.Startup();
+            UnityEngine.Debug.Log("EditorFrameworks Start");
         }
 
         /// <summary>

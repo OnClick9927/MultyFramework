@@ -1,51 +1,5 @@
 ﻿using MutiFramework;
 using UnityEngine;
-
-public class ExampleFrame1Drawer : FrameworkDrawer
-{
-    public override string name { get { return "ExampleFrame1"; } }
-
-    public override string version { get { return "1"; } }
-
-    public override string author { get { return "author"; } }
-
-    public override string describtion { get { return "describtion"; } }
-
-    public override string assetPath { get { return "Assets"; } }
-    public override void FrameworkGUI()
-    {
-        if (GUILayout.Button("Say Type"))
-        {
-            Debug.Log(GetType().FullName);
-        }
-    }
-
-}
-public class ExampleFrame2Drawer : FrameworkDrawer
-{
-    public override string name { get { return "ExampleFrame2"; } }
-
-    public override string version { get { return "1"; } }
-
-    public override string author { get { return "author"; } }
-
-    public override string describtion { get { return "describtion"; } }
-
-    public override string assetPath { get { return "Assets"; } }
-
-    public override void FrameworkGUI()
-    {
-        if (GUILayout.Button("Say Type"))
-        {
-            Debug.Log(GetType().FullName);
-        }
-    }
-
-  
-}
-
-
-
 public class ExampleToolLine : ToolDrawer
 {
     public override string name { get { return "ChooseColor"; } }
@@ -64,8 +18,6 @@ public class ExampleToolLine : ToolDrawer
                 ;
         }
     }
-
-    public override string assetPath { get { return "Assets"; } }
 
     private Color _color=Color.white;
 

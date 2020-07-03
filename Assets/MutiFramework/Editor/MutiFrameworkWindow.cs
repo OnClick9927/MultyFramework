@@ -4,62 +4,72 @@ using UnityEngine;
 using System;
 using System.Linq;
 using UnityEditor;
+using System.IO;
 
 namespace MutiFramework
 {
-    partial class MutiFrameworkWindow : EditorWindow
+    public partial class MutiFrameworkWindow : EditorWindow
     {
-        class CollectionDrawer : DescriptionGUIDrawer
+        class WebCollection : MutiFrameworkDrawer
         {
             private string _name;
-            private string _version;
             private string _author;
-            private string _describtion;
-            private string _assetPath;
-            private string[] _dependences;
-            private string _helpurl;
-            private string _unityVersion;
-            private string _downloadUrl;
 
-            public string unityVersion { get { return _unityVersion; } }
-            public string downloadUrl { get { return _downloadUrl; } }
+
+            private CollectionInfo.Version _current { get { return versions[_versionSelect]; } }
+            public CollectionInfo.Version[] versions;
+
+            public string unityVersion { get { return _current.unityVersion; } }
+
+            public bool exist { get { return Directory.Exists(assetPath); } }
 
             public override string name { get { return _name; } }
-            public override string version { get { return _version; } }
+            public override string version { get { return _current.version; } }
             public override string author { get { return _author; } }
-            public override string describtion { get { return _describtion; } }
-            public override string assetPath { get { return _assetPath; } }
+            public override string describtion { get { return _current.describtion; } }
+            public string assetPath { get { return _current.assetPath; } }
+
             public override string helpurl
             {
                 get
                 {
-                    if (string.IsNullOrEmpty(_helpurl))
+                    if (string.IsNullOrEmpty(_current.helpurl))
                         return base.helpurl;
-                    return _helpurl;
+                    return _current.helpurl;
                 }
             }
-            public override string[] dependences { get { return _dependences; } }
+            public override string[] dependences { get { return _current.dependences; } }
 
-            public CollectionDrawer(string name, string version, string author, string describtion, string assetPath, string[] dependences, string helpurl, string unityVersion, string downloadUrl)
+            public WebCollection( string name, string author, CollectionInfo.Version[] versions)
             {
                 _name = name;
-                _version = version;
+                this.versions = versions;
                 _author = author;
-                _describtion = describtion;
-                _assetPath = assetPath;
-                _dependences = dependences;
-                _helpurl = helpurl;
-                _unityVersion = unityVersion;
-                _downloadUrl = downloadUrl;
+                _versionSelect = 0;
             }
-
+            private int _versionSelect;
+            private string _diskversion;
             private bool _describtionFold = true;
             private bool _dependencesFold = true;
             private Vector2 _scroll;
+            private string[] _versionNames;
+
+            public override void OnEnable()
+            {
+                _diskversion = string.Empty;
+                _versionNames = new string[versions.Length];
+                for (int i = 0; i < versions.Length; i++)
+                {
+                    _versionNames[i] ="v "+ versions[i].version;
+                }
+                if (exist)
+                {
+                    _diskversion = MutiFrameworkEditorTool.ReadDiskVersion(assetPath);
+                }
+            }
 
             public override void OnGUI(Rect rect)
             {
-                base.OnGUI(rect);
                 GUILayout.BeginArea(rect);
                 {
                     _scroll = GUILayout.BeginScrollView(_scroll);
@@ -74,30 +84,22 @@ namespace MutiFramework
                         GUILayout.Label(unityVersion);
                         GUILayout.FlexibleSpace();
 
-                        bool exist = System.IO.File.Exists(assetPath);
-                        if (exist)
+                        using (new EditorGUI.DisabledScope(_diskversion==version))
                         {
-                            if (GUILayout.Button("Install Again"))
+                            if (GUILayout.Button("Install",Styles.buttonLeft))
                             {
-                                InstallPakageAgain(this);
+                                InstallPakage();
                             }
+                        }
+                        _versionSelect = EditorGUILayout.Popup(_versionSelect, _versionNames, new GUIStyle("Popup")
+                        {
+                            margin = new RectOffset(2, 0, 3, 2)
+                        }, GUILayout.Width(Contents.gap * 7));
+                        using (new EditorGUI.DisabledScope(!exist))
+                        {
                             if (GUILayout.Button("Remove"))
                             {
                                 RemovePakage(assetPath);
-                            }
-                        }
-                        else
-                        {
-                            if (GUILayout.Button("Install"))
-                            {
-                                InstallPakage(this);
-                            }
-                            using (new EditorGUI.DisabledScope(true))
-                            {
-                                if (GUILayout.Button("Remove"))
-                                {
-                                    RemovePakage(assetPath);
-                                }
                             }
                         }
                         GUILayout.EndHorizontal();
@@ -119,7 +121,7 @@ namespace MutiFramework
                         last.xMin -= 10;
                         last.width = 10;
 
-                        _dependencesFold = UnityEditor.EditorGUI.Foldout(last, _dependencesFold, "");
+                        _dependencesFold = EditorGUI.Foldout(last, _dependencesFold, "");
                         if (_dependencesFold)
                         {
                             if (dependences != null)
@@ -154,27 +156,31 @@ namespace MutiFramework
                 }
                 GUILayout.EndArea();
             }
-
-            private void InstallPakageAgain(CollectionInfo info)
+            private void InstallPakage()
             {
-                MutiFrameworkWindowUtil.InstallPakageAgain(info);
-            }
-
-            private void InstallPakage(CollectionInfo info)
-            {
-                MutiFrameworkWindowUtil.InstallPakage(info);
+                MutiFrameworkEditorTool.RemovePakage(assetPath);
+                string path = $"{MutiFrameworkEditorTool.rootPath}/{name}_{version}.unitypackage";
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+                HttpPkg.DownloadPkg(name, version, path, () =>
+                {
+                    AssetDatabase.ImportPackage(path, true);
+                    window.FreshInPorject();
+                    OnEnable();
+                });
             }
             protected virtual void RemovePakage(string path)
             {
-                MutiFrameworkWindowUtil.RemovePakage(path);
+                MutiFrameworkEditorTool.RemovePakage(path);
+                window.FreshInPorject();
+                OnEnable();
             }
-            public static implicit operator CollectionDrawer(CollectionInfo info)
+            public static implicit operator WebCollection(CollectionInfo info)
             {
-                return new CollectionDrawer(info.name, info.version, info.author, info.describtion, info.assetPath, info.dependences, info.helpurl, info.unityVersion, info.downloadUrl);
+                return new WebCollection(info.name, info.author, info.versions);
             }
-            public static implicit operator CollectionInfo(CollectionDrawer drawer)
+            public static implicit operator CollectionInfo(WebCollection drawer)
             {
-                return new CollectionInfo(drawer.name, drawer.version, drawer.author, drawer.describtion, drawer.assetPath, drawer.dependences, drawer.helpurl, drawer.unityVersion, drawer.downloadUrl);
+                return new CollectionInfo(drawer.name, drawer.author, drawer.versions);
             }
         }
         class Styles
@@ -206,9 +212,9 @@ namespace MutiFramework
         private enum WindowSelectType
         {
             ReadMe,
-            FrameworksInProject,
+            InProject,
             Tools,
-            FrameworkCollection,
+            WebCollection,
         }
         [Serializable]
         public class SplitView
@@ -300,35 +306,29 @@ namespace MutiFramework
         [MenuItem("MutiFramework/Window")]
         static void OpenWindow()
         {
-            GetWindow<MutiFrameworkWindow>();
+           GetWindow<MutiFrameworkWindow>();
         }
 
         private IEnumerable<Type> GetTypes()
         {
             return AppDomain.CurrentDomain.GetAssemblies().SelectMany((a) => { return a.GetTypes(); });
         }
-        private List<DescriptionGUIDrawer> GetTools(IEnumerable<Type> types)
+        private List<PanelGUIDrawer> GetTools(IEnumerable<Type> types)
         {
             return types
                 .Where((type) => { return !type.IsAbstract && type.IsSubclassOf(typeof(ToolDrawer)); })
-                .Select((type) => { return Activator.CreateInstance(type) as DescriptionGUIDrawer; })
+                .Select((type) => { return Activator.CreateInstance(type) as PanelGUIDrawer; })
                 .ToList();
         }
-        private List<DescriptionGUIDrawer> GetFrameworksInProject(IEnumerable<Type> types)
+        private List<PanelGUIDrawer> GetMutiFrameworkTools(IEnumerable<Type> types)
         {
             return types
-                .Where((type) => { return !type.IsAbstract && type.IsSubclassOf(typeof(FrameworkDrawer)); })
-                .Select((type) => { return Activator.CreateInstance(type) as DescriptionGUIDrawer; }).ToList();
-
+                .Where((type) => { return !type.IsAbstract && type.IsSubclassOf(typeof(MutiFrameworkDrawer)) &&type !=typeof(WebCollection);  })
+                .Select((type) => { return Activator.CreateInstance(type) as PanelGUIDrawer; })
+                .ToList();
         }
 
-        private List<DescriptionGUIDrawer> GetCollection()
-        {
-            return MutiFrameworkWindowUtil.GetCollections().ConvertAll((info) => {
-                CollectionDrawer drawer = info;
-                return drawer as DescriptionGUIDrawer;
-            });
-        }
+
 
 
         private void SplitFirstView(Rect rect)
@@ -340,11 +340,11 @@ namespace MutiFramework
             {
                 case WindowSelectType.ReadMe:
                     break;
-                case WindowSelectType.FrameworksInProject:
-                    FrameworksInProjectLeftView(_search);
+                case WindowSelectType.InProject:
+                    InProjectLeftView(_search);
                     break;
-                case WindowSelectType.FrameworkCollection:
-                    FrameworksCollectionLeftView(_search);
+                case WindowSelectType.WebCollection:
+                    CollectionLeftView(_search);
                     break;
                 case WindowSelectType.Tools:
                     ToolsLeftView(_search);
@@ -352,6 +352,7 @@ namespace MutiFramework
                 default:
                     break;
             }
+
             GUILayout.EndArea();
             GUI.EndClip();
         }
@@ -364,9 +365,16 @@ namespace MutiFramework
             {
                 case WindowSelectType.ReadMe:
                     break;
-                case WindowSelectType.FrameworkCollection:
-                case WindowSelectType.FrameworksInProject:
+                case WindowSelectType.WebCollection:
+                case WindowSelectType.InProject:
                 case WindowSelectType.Tools:
+                    if (SceneView.lastActiveSceneView != null) SceneView.lastActiveSceneView.sceneViewState.Toggle(true);
+                    if (Event.current.type== EventType.Repaint)
+                    {
+
+                    Graphics.DrawTexture(rect, _tx, _mat);
+                    }
+
                     RightSelectView(rect);
                     break;
                 default:
@@ -375,7 +383,7 @@ namespace MutiFramework
             GUI.EndClip();
         }
 
-        private void LeftSelectView(string search, List<DescriptionGUIDrawer> guis)
+        private void LeftSelectView(string search, List<PanelGUIDrawer> guis)
         {
             if (guis == null || guis.Count == 0) return;
             for (int i = 0; i < guis.Count; i++)
@@ -444,13 +452,13 @@ namespace MutiFramework
         {
             LeftSelectView(search, _tools);
         }
-        private void FrameworksInProjectLeftView(string search)
+        private void CollectionLeftView(string search)
         {
-            LeftSelectView(search, _frameworks);
+            LeftSelectView(search, _collection);
         }
-        private void FrameworksCollectionLeftView(string search)
+        private void InProjectLeftView(string search)
         {
-            LeftSelectView(search, _Collection);
+            LeftSelectView(search, _inProject);
         }
 
         private void OnSelectWindowTypeChange(WindowSelectType value)
@@ -464,12 +472,12 @@ namespace MutiFramework
             {
                 case WindowSelectType.ReadMe:
                     break;
-                case WindowSelectType.FrameworksInProject:
+                case WindowSelectType.InProject:
                     break;
                 case WindowSelectType.Tools:
                     break;
-                case WindowSelectType.FrameworkCollection:
-                    _Collection = GetCollection();
+                case WindowSelectType.WebCollection:
+                  //  _collection = GetCollection();
                     break;
                 default:
                     break;
@@ -477,9 +485,9 @@ namespace MutiFramework
         }
 
 
-        private List<DescriptionGUIDrawer> _frameworks;
-        private List<DescriptionGUIDrawer> _tools;
-        private List<DescriptionGUIDrawer> _Collection;
+        private List<PanelGUIDrawer> _tools;
+        private List<PanelGUIDrawer> _collection;
+        private List<PanelGUIDrawer> _inProject;
 
         private WindowSelectType _windowSelectType
         {
@@ -493,7 +501,7 @@ namespace MutiFramework
                 }
             }
         }
-        private DescriptionGUIDrawer _selectDrawer
+        private PanelGUIDrawer _selectDrawer
         {
             get { return __selectDrawer; }
             set
@@ -503,18 +511,16 @@ namespace MutiFramework
                     if (__selectDrawer != null)
                     {
                         __selectDrawer.OnDisable();
-                        _selectDrawer.window = null;
                     }
                     __selectDrawer = value;
                     if (__selectDrawer != null)
                     {
-                        _selectDrawer.window = this;
                         __selectDrawer.OnEnable();
                     }
                 }
             }
         }
-        private DescriptionGUIDrawer __selectDrawer;
+        private PanelGUIDrawer __selectDrawer;
 
         private SearchType _searchType;
         private SplitView _splitView;
@@ -584,7 +590,8 @@ namespace MutiFramework
 
         private void OnEnable()
         {
-            _url = MutiFrameworkWindowUtil.frameworkUrl;
+            PanelGUIDrawer.window = this;
+            _url = MutiFrameworkEditorTool.frameworkUrl;
             this.titleContent = new GUIContent("MutiFramework");
             if (!_webView)
             {
@@ -597,13 +604,57 @@ namespace MutiFramework
             _splitView.fistPan = SplitFirstView;
             _splitView.secondPan = SplitSecondView;
             var types = GetTypes();
-            _frameworks = GetFrameworksInProject(types);
-            _tools = GetTools(types);
-            _Collection = GetCollection();
+            _tools = GetMutiFrameworkTools(types).Concat(GetTools(types)).ToList();
+            _tools.ForEach((f) => { f.Awake(); }); 
+
+            if (!needReload)
+            {
+                _collection = _colletionInfos.ConvertAll((info) => {
+                    WebCollection drawer = info;
+                    return drawer as PanelGUIDrawer;
+                });
+                FreshInPorject();
+                _collection.ForEach((f) => { f.Awake(); });
+            }
+
+
+            _mat = AssetDatabase.LoadAssetAtPath<Material>("Assets/MutiFramework/Editor/Shader/Unlit_Water.mat"); 
+            _tx= AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/MutiFramework/Editor/Shader/Gamemap.png");
         }
+        public void FreshInPorject()
+        {
+            _inProject = _collection.FindAll((_c) =>
+            {
+                return (_c as WebCollection).exist;
+            });
+        }
+        public bool needReload { get { return _colletionInfos == null ; } }
+        private List<CollectionInfo> _colletionInfos;
+
+        public void FreshCollection(List<CollectionInfo> infos)
+        {
+            _collection= infos.ConvertAll((info) => {
+                WebCollection drawer = info;
+                return drawer as PanelGUIDrawer;
+            });
+            FreshInPorject();
+            _collection.ForEach((f) => { f.Awake(); });
+        }
+
         private void OnDisable()
         {
+            _tools.ForEach((f) => { f.OnDestroy(); });
             _selectDrawer = null;
+            if (_collection!=null)
+            {
+                _collection.ForEach((f) => { f.OnDestroy(); });
+                _colletionInfos = _collection.ConvertAll((d) =>
+                {
+                    WebCollection _c = d as WebCollection;
+                    CollectionInfo info = _c;
+                    return info;
+                });
+            }
         }
         private void OnGUI()
         {
@@ -647,6 +698,8 @@ namespace MutiFramework
             }
             Repaint();
         }
+        private Texture2D _tx;
+        private Material _mat;
         void OnDestroy()
         {
             DestroyImmediate(_webView);
