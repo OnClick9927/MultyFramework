@@ -8,7 +8,6 @@ The Goal : Use multiple frames at the same time
 * Editor
   * EditorFrameworks（The Frameworks in Editor mode，The Editor Entrance of Framework that in project which supports Editor mode）
   * Window
-    * FrameworkDrawer （The Editorwindow view of Frameworks that in project  ）
     * ToolDrawer（The Editorwindow view of tools that in project）
 * Runtime
   * Frameworks（The Frameworks in runtime Mode，The Editor Entrance of Framework that in project which supports runtime mode）
@@ -88,8 +87,6 @@ public class ExampleToolLine : ToolDrawer
         }
     }
 
-    public override string assetPath { get { return "Assets"; } }
-
     private Color _color=Color.white;
 
 
@@ -103,34 +100,11 @@ public class ExampleToolLine : ToolDrawer
     }
 }
  ```
-   ### Extend MutiFramework EditorWindow Enterance of your EditorWindows by your codes
- ``` csharp
-public class ExampleFrame2Drawer : FrameworkDrawer
-{
-    public override string name { get { return "ExampleFrame2"; } }
 
-    public override string version { get { return "1"; } }
-
-    public override string author { get { return "author"; } }
-
-    public override string describtion { get { return "describtion"; } }
-
-    public override string assetPath { get { return "Assets"; } }
-
-    public override void FrameworkGUI()
-    {
-        if (GUILayout.Button("Say Type"))
-        {
-            Debug.Log(GetType().FullName);
-        }
-    }
-
-  
-}
- ```
+ 
  #### Result of EditorWindow Extension by codes
  ![result](http://file.liangxiegame.com/8d019686-a36b-4930-89ea-8b7c469863bb.png)
-![result](http://file.liangxiegame.com/1a1caa23-8a38-4ba1-b914-3b82b763c7ed.png)
+
 # Framework to be accessed
 🥚[IFramework(OnClick)](https://github.com/OnClick9927/IFramework)
 
