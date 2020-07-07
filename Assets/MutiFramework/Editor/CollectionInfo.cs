@@ -1,5 +1,4 @@
-﻿#if MutiFramework
-using System;
+﻿using System;
 namespace MutiFramework
 {
     /// <summary>
@@ -45,4 +44,4 @@ namespace MutiFramework
     }
 }
 
-#endif
+

@@ -1,5 +1,4 @@
-﻿#if MutiFramework
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 
 namespace MutiFramework
@@ -42,4 +41,4 @@ namespace MutiFramework
         }
     }
 }
-#endif
+

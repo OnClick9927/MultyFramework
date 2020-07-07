@@ -1,5 +1,4 @@
-﻿#if MutiFramework
-using System;
+﻿using System;
 
 namespace MutiFramework
 {
@@ -19,5 +18,3 @@ namespace MutiFramework
         Editor = 2
     }
 }
-
-#endif

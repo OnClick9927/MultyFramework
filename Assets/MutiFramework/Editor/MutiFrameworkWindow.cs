@@ -1,5 +1,4 @@
-﻿#if MutiFramework
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Linq;
@@ -368,7 +367,7 @@ namespace MutiFramework
                 case WindowSelectType.WebCollection:
                 case WindowSelectType.InProject:
                 case WindowSelectType.Tools:
-                    if (SceneView.lastActiveSceneView != null) SceneView.lastActiveSceneView.sceneViewState.Toggle(true);
+                    if (SceneView.lastActiveSceneView != null) SceneView.lastActiveSceneView.sceneViewState.SetAllEnabled(true);
                     if (Event.current.type== EventType.Repaint)
                     {
 
@@ -706,4 +705,3 @@ namespace MutiFramework
         }
     }
 }
-#endif

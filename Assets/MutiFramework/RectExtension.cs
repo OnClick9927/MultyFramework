@@ -1,7 +1,6 @@
 ﻿/// <summary>
 ///  https://github.com/OnClick9927/IFramework
 /// </summary>
-#if MutiFramework
 using UnityEngine;
 namespace MutiFramework
 {
@@ -152,5 +151,3 @@ namespace MutiFramework
         }
     }
 }
-
-#endif

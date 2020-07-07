@@ -1,6 +1,4 @@
-﻿#if MutiFramework
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -163,15 +161,15 @@ namespace MutiFramework
         public class PkgInfo
         {
             // todo:不写默认值是因为返回的结构也是使用此结构体 如果有默认值会造成失败时候也有数据了
-            public string pkg_name;
-            public string version;
-            public string permissions;
-            public string dependences;
-            public string author;
-            public string describtion;
-            public string help_url;
-            public string pkg_path;
-            public string unity_version;
+            public string pkg_name="";
+            public string version="";
+            public string permissions="";
+            public string dependences="";
+            public string author="";
+            public string describtion="";
+            public string help_url="";
+            public string pkg_path="";
+            public string unity_version="";
 
 
             public List<string> GetDependences()
@@ -526,4 +524,4 @@ namespace MutiFramework
 
     }
 }
-#endif
+

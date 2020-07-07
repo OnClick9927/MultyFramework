@@ -1,7 +1,6 @@
 ﻿/// <summary>
 ///  https://github.com/OnClick9927/IFramework
 /// </summary>
-#if MutiFramework
 namespace MutiFramework
 {
     public enum AnchorType
@@ -17,4 +16,3 @@ namespace MutiFramework
         LowerRight = 8
     }
 }
-#endif

@@ -1,5 +1,4 @@
-﻿#if MutiFramework
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 using System.IO;
@@ -403,4 +402,3 @@ namespace MutiFramework
         }
     }
 }
-#endif

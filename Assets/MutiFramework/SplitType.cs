@@ -1,5 +1,4 @@
-﻿#if MutiFramework
-namespace MutiFramework
+﻿namespace MutiFramework
 {
     /// <summary>
     /// 切分方式
@@ -16,5 +15,3 @@ namespace MutiFramework
         Horizontal
     }
 }
-
-#endif
