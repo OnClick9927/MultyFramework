@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="ExampleFrame1" Collapsed="true">
+    <Position X="0.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAACQAAAAAAAAAAAAAAAAEAAAAAAAAAAEAAAA=</HashCode>
+      <FileName>Assets\Example\Example.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ExampleFrame2" Collapsed="true">
+    <Position X="2.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAACQAAAAAAAAAAAAAAAAEAAAAAAAAAAEAAAA=</HashCode>
+      <FileName>Assets\Example\Example.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MultyFramework.Framework" Collapsed="true">
+    <Position X="1.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAIAAAACACQAAAAAAAAAAAAAAAAEIAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\MultyFramework\Framework.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="MultyFramework.FrameworkAttribute" Collapsed="true">
+    <Position X="5.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\MultyFramework\FrameworkAttribute.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MultyFramework.MultyFrameworkContaner" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="7" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAACAAAABAAAAAAAAAAAgCIAAAQAAAAAAAAAA=</HashCode>
+      <FileName>Assets\MultyFramework\MultyFrameworkContaner.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="MultyFramework.RectExtension" Collapsed="true">
+    <Position X="5.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAEAAAAAIAIBAgEAAAAACAAAAAAAEQAQAAAAEACAA=</HashCode>
+      <FileName>Assets\MultyFramework\RectExtension.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MultyFramework.UpdateFramework" Collapsed="true">
+    <Position X="1.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAA=</HashCode>
+      <FileName>Assets\MultyFramework\UpdateFramework.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="MultyFramework.AnchorType" Collapsed="true">
+    <Position X="5.25" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAAAAAAAACAECAAAAEQAAAAAAAAAAgACQAAAAA=</HashCode>
+      <FileName>Assets\MultyFramework\AnchorType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="MultyFramework.EnvironmentType" Collapsed="true">
+    <Position X="7" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAASAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\MultyFramework\EnvironmentType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="MultyFramework.SplitType" Collapsed="true">
+    <Position X="5.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAABAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\MultyFramework\SplitType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Microsoft YaHei UI" Size="9" />
+</ClassDiagram>
