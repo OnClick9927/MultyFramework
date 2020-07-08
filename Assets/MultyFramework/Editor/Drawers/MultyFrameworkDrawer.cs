@@ -247,6 +247,7 @@ namespace MultyFramework
                     req.SetRequestHeader("token", token);
                 }
 
+
                 //  req.SetRequestHeader("device_info", JsonUtility.ToJson(GetDeviceInfo()));
                 req.SendWebRequest();
                 while (!req.isDone)

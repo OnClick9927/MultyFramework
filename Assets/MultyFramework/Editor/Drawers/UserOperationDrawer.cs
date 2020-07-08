@@ -171,6 +171,7 @@ namespace MultyFramework
                                 token = model.data.token,
                                 name=model.data.nick_name
                             };
+                            token = model.data.token;
                             File.WriteAllText(_userjsonPath, JsonUtility.ToJson(_userJson, true), _encoding);
                             FreshWebCollection();
                         });
