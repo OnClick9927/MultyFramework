@@ -685,7 +685,11 @@ namespace MultyFramework
                 }
                 else
                 {
+#if UNITY_2019_OR_NEWER
                     if (SceneView.lastActiveSceneView != null) SceneView.lastActiveSceneView.sceneViewState.SetAllEnabled(true);
+#else
+                    if (SceneView.lastActiveSceneView != null) SceneView.lastActiveSceneView.sceneViewState.Toggle(true);
+#endif
                     if (Event.current.type == EventType.Repaint)
                     {
                         Graphics.DrawTexture(new Rect(Vector2.zero,position.size), _tx, _mat);
