@@ -1,4 +1,4 @@
-﻿namespace MutiFramework
+﻿namespace MultyFramework
 {
     /// <summary>
     /// 切分方式

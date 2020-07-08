@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace MutiFramework
+namespace MultyFramework
 {
     /// <summary>
     /// 绘制工具栏目

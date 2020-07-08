@@ -1,7 +1,7 @@
 ﻿/// <summary>
 ///  https://github.com/OnClick9927/IFramework
 /// </summary>
-namespace MutiFramework
+namespace MultyFramework
 {
     public enum AnchorType
     {

@@ -6,9 +6,9 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 
-namespace MutiFramework
+namespace MultyFramework
 {
-    class MutiFrameworkEditorTool
+    class MultyFrameworkEditorTool
     {
         public class UploadInfo
         {
@@ -19,14 +19,14 @@ namespace MutiFramework
             public string author = "author";
             public string describtion = "No Describtion ";
             public string assetPath = "Assets";
-            public string helpurl = MutiFrameworkEditorTool.baidu;
+            public string helpurl = MultyFrameworkEditorTool.baidu;
             public List<string> dependences = new List<string>();
         }
 
         internal const string baidu = "https://www.baidu.com/";
         internal const string frameworkUrl = "https://tdouguo.github.io/x/";
         internal const string version="0.0.0.1";
-        internal const string framewokName = "MutiFramework";
+        internal const string framewokName = "MultyFramework";
         private const string userJsonName = "version.json";
         private static Encoding encod = Encoding.UTF8;
 
@@ -49,8 +49,8 @@ namespace MutiFramework
         {
 
             string flag = "//ToDo";
-            string editorPath = "Assets/MutiFramework/Editor/EditorFrameworks.cs";
-            string rtPath = "Assets/MutiFramework/Frameworks.cs";
+            string editorPath = "Assets/MultyFramework/Editor/EditorFrameworks.cs";
+            string rtPath = "Assets/MultyFramework/Frameworks.cs";
             Encoding utf8 = Encoding.UTF8;
             var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany((a) => { return a.GetTypes(); });
             EditorUtility.DisplayProgressBar("Fresh Scripts", "", 0);

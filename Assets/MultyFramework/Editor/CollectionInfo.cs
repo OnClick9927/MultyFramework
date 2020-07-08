@@ -1,5 +1,5 @@
 ﻿using System;
-namespace MutiFramework
+namespace MultyFramework
 {
     /// <summary>
     /// 网上的条目

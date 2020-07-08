@@ -5,11 +5,11 @@ using System.Linq;
 using UnityEditor;
 using System.IO;
 
-namespace MutiFramework
+namespace MultyFramework
 {
-    public partial class MutiFrameworkWindow : EditorWindow
+    public partial class MultyFrameworkWindow : EditorWindow
     {
-        class WebCollection : MutiFrameworkDrawer
+        class WebCollection : MultyFrameworkDrawer
         {
             private string _name;
             private string _author;
@@ -63,7 +63,7 @@ namespace MutiFramework
                 }
                 if (exist)
                 {
-                    _diskversion = MutiFrameworkEditorTool.ReadDiskVersion(assetPath);
+                    _diskversion = MultyFrameworkEditorTool.ReadDiskVersion(assetPath);
                 }
             }
 
@@ -157,8 +157,8 @@ namespace MutiFramework
             }
             private void InstallPakage()
             {
-                MutiFrameworkEditorTool.RemovePakage(assetPath);
-                string path = $"{MutiFrameworkEditorTool.rootPath}/{name}_{version}.unitypackage";
+                MultyFrameworkEditorTool.RemovePakage(assetPath);
+                string path = $"{MultyFrameworkEditorTool.rootPath}/{name}_{version}.unitypackage";
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
                 HttpPkg.DownloadPkg(name, version, path, () =>
                 {
@@ -169,7 +169,7 @@ namespace MutiFramework
             }
             protected virtual void RemovePakage(string path)
             {
-                MutiFrameworkEditorTool.RemovePakage(path);
+                MultyFrameworkEditorTool.RemovePakage(path);
                 window.FreshInPorject();
                 OnEnable();
             }
@@ -302,10 +302,10 @@ namespace MutiFramework
                 }
             }
         }
-        [MenuItem("MutiFramework/Window")]
+        [MenuItem("MultyFramework/Window")]
         static void OpenWindow()
         {
-           GetWindow<MutiFrameworkWindow>();
+           GetWindow<MultyFrameworkWindow>();
         }
 
         private IEnumerable<Type> GetTypes()
@@ -319,10 +319,10 @@ namespace MutiFramework
                 .Select((type) => { return Activator.CreateInstance(type) as PanelGUIDrawer; })
                 .ToList();
         }
-        private List<PanelGUIDrawer> GetMutiFrameworkTools(IEnumerable<Type> types)
+        private List<PanelGUIDrawer> GetMultyFrameworkTools(IEnumerable<Type> types)
         {
             return types
-                .Where((type) => { return !type.IsAbstract && type.IsSubclassOf(typeof(MutiFrameworkDrawer)) &&type !=typeof(WebCollection);  })
+                .Where((type) => { return !type.IsAbstract && type.IsSubclassOf(typeof(MultyFrameworkDrawer)) &&type !=typeof(WebCollection);  })
                 .Select((type) => { return Activator.CreateInstance(type) as PanelGUIDrawer; })
                 .ToList();
         }
@@ -530,7 +530,7 @@ namespace MutiFramework
         private const float toolbarHeight = 20;
         private const float gap = 10;
     }
-    partial class MutiFrameworkWindow
+    partial class MultyFrameworkWindow
     {
 
 
@@ -590,8 +590,8 @@ namespace MutiFramework
         private void OnEnable()
         {
             PanelGUIDrawer.window = this;
-            _url = MutiFrameworkEditorTool.frameworkUrl;
-            this.titleContent = new GUIContent("MutiFramework");
+            _url = MultyFrameworkEditorTool.frameworkUrl;
+            this.titleContent = new GUIContent("MultyFramework");
             if (!_webView)
             {
                 _webView = CreateInstance<WebViewHook>();
@@ -603,7 +603,7 @@ namespace MutiFramework
             _splitView.fistPan = SplitFirstView;
             _splitView.secondPan = SplitSecondView;
             var types = GetTypes();
-            _tools = GetMutiFrameworkTools(types).Concat(GetTools(types)).ToList();
+            _tools = GetMultyFrameworkTools(types).Concat(GetTools(types)).ToList();
             _tools.ForEach((f) => { f.Awake(); }); 
 
             if (!needReload)
@@ -617,8 +617,8 @@ namespace MutiFramework
             }
 
 
-            _mat = AssetDatabase.LoadAssetAtPath<Material>("Assets/MutiFramework/Editor/Shader/Unlit_Water.mat"); 
-            _tx= AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/MutiFramework/Editor/Shader/Gamemap.png");
+            _mat = AssetDatabase.LoadAssetAtPath<Material>("Assets/MultyFramework/Editor/Shader/Unlit_Water.mat"); 
+            _tx= AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/MultyFramework/Editor/Shader/Gamemap.png");
         }
         public void FreshInPorject()
         {

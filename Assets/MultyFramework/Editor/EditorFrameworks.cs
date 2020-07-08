@@ -1,8 +1,8 @@
-﻿#if MutiFramework
+﻿#if MultyFramework
 using System;
 using System.Linq;
 using UnityEditor;
-namespace MutiFramework
+namespace MultyFramework
 {
     public class EditorFrameworks
     {
@@ -13,12 +13,12 @@ namespace MutiFramework
         /// <summary>
         /// 框架容器
         /// </summary>
-        public static MutiFrameworkContaner container;
+        public static MultyFrameworkContaner container;
 
         [InitializeOnLoadMethod]
         static void Startup()
         {
-            container = new MutiFrameworkContaner();
+            container = new MultyFrameworkContaner();
             var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany((a) => { return a.GetTypes(); });
             types
                  .Where((type) => {

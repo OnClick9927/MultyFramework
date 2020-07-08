@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace MutiFramework
+namespace MultyFramework
 {
     /// <summary>
     /// 绘制栏目
@@ -50,7 +50,7 @@ namespace MutiFramework
         /// <summary>
         /// 帮助链接
         /// </summary>
-        public virtual string helpurl { get { return MutiFrameworkEditorTool.baidu; } }
+        public virtual string helpurl { get { return MultyFrameworkEditorTool.baidu; } }
         /// <summary>
         /// 依赖内容
         /// </summary>
@@ -63,7 +63,7 @@ namespace MutiFramework
         /// <summary>
         /// 所属窗体
         /// </summary>
-        public static MutiFrameworkWindow window { get; set; }
+        public static MultyFrameworkWindow window { get; set; }
         /// <summary>
         /// 输出提示
         /// </summary>

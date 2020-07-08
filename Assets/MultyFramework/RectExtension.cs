@@ -2,7 +2,7 @@
 ///  https://github.com/OnClick9927/IFramework
 /// </summary>
 using UnityEngine;
-namespace MutiFramework
+namespace MultyFramework
 {
     public static class RectExtension
     {

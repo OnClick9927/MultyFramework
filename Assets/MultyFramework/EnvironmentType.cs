@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MutiFramework
+namespace MultyFramework
 {
     /// <summary>
     /// 环境

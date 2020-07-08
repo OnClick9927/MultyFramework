@@ -1,4 +1,4 @@
-﻿using MutiFramework;
+﻿using MultyFramework;
 
 [Framework(EnvironmentType.Editor | EnvironmentType.Runtime)]
 public class ExampleFrame1 : UpdateFramework

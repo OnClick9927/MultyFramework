@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace MutiFramework
+namespace MultyFramework
 {
     public class WebViewHook : ScriptableObject
     {

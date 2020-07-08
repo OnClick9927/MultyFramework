@@ -2,12 +2,12 @@
 using UnityEngine;
 using System;
 
-namespace MutiFramework
+namespace MultyFramework
 {
     /// <summary>
     /// 框架容器
     /// </summary>
-    public class MutiFrameworkContaner : IDisposable
+    public class MultyFrameworkContaner : IDisposable
     {
         /// <summary>
         /// 框架集合
@@ -21,7 +21,7 @@ namespace MutiFramework
         /// <summary>
         /// ctor
         /// </summary>
-        public MutiFrameworkContaner()
+        public MultyFrameworkContaner()
         {
             _frameworks = new Dictionary<string, Framework>();
             _updates = new List<UpdateFramework>();

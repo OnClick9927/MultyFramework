@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MutiFramework
+namespace MultyFramework
 {
     /// <summary>
     /// 框架标记

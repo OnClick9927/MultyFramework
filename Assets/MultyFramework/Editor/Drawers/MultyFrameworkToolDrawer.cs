@@ -1,25 +1,25 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-namespace MutiFramework
+namespace MultyFramework
 {
-    class MutiFrameworkToolDrawer : MutiFrameworkDrawer
+    class MultyFrameworkToolDrawer : MultyFrameworkDrawer
     {
         private const float searchTxtWith=200;
         private const float gap=10;
         private const int btnWith=20;
-        private const string _describtion = "MutiFramework  version: "+ MutiFrameworkEditorTool.version+" \n" +
+        private const string _describtion = "MultyFramework  version: "+ MultyFrameworkEditorTool.version+" \n" +
                                             "\n you can enjoy to use it";
         private string[] _dependences = new string[] {
-            "MutiFramework"
+            "MultyFramework"
         };
 
-        public override string name { get { return "MutiFramework Editor Tools"; } }
-        public override string version { get { return MutiFrameworkEditorTool.version; } }
+        public override string name { get { return "MultyFramework Editor Tools"; } }
+        public override string version { get { return MultyFrameworkEditorTool.version; } }
         public override string author { get { return "OnClick"; } }
         public override string describtion { get { return _describtion; } }
         public override string[] dependences { get { return _dependences; } }
-        public override string helpurl { get { return MutiFrameworkEditorTool.frameworkUrl; } }
+        public override string helpurl { get { return MultyFrameworkEditorTool.frameworkUrl; } }
 
 
 
@@ -35,7 +35,7 @@ namespace MutiFramework
             {
                 if (!EditorApplication.isCompiling)
                 {
-                    MutiFrameworkEditorTool.CreateClass();
+                    MultyFrameworkEditorTool.CreateClass();
                 }
             }
         }

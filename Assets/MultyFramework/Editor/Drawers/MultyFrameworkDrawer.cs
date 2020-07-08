@@ -8,9 +8,9 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 #pragma  warning disable 0649
-namespace MutiFramework
+namespace MultyFramework
 {
-    abstract class MutiFrameworkDrawer: PanelGUIDrawer
+    abstract class MultyFrameworkDrawer: PanelGUIDrawer
     {
         protected static string token;
         public static class PkgConstant

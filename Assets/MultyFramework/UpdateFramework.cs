@@ -1,4 +1,4 @@
-﻿namespace MutiFramework
+﻿namespace MultyFramework
 {
     /// <summary>
     /// 需要不断刷新的框架

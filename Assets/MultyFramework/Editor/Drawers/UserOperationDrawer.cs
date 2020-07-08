@@ -5,9 +5,9 @@ using System.IO;
 using System;
 using System.Text;
 
-namespace MutiFramework
+namespace MultyFramework
 {
-    class UserOperationDrawer : MutiFrameworkDrawer
+    class UserOperationDrawer : MultyFrameworkDrawer
     {
         private class UserJson
         {
@@ -34,24 +34,24 @@ namespace MutiFramework
         }
         private UserOperation _userOperation;
 
-        private const string _describtion = "MutiFramework  version: " + MutiFrameworkEditorTool.version + " \n" +
+        private const string _describtion = "MultyFramework  version: " + MultyFrameworkEditorTool.version + " \n" +
                                             "\n you can enjoy to use it";
         private string[] _dependences = new string[] {
-            "MutiFramework"
+            "MultyFramework"
         };
 
-        public override string name { get { return "MutiFramework User Operation"; } }
-        public override string version { get { return MutiFrameworkEditorTool.version; } }
+        public override string name { get { return "MultyFramework User Operation"; } }
+        public override string version { get { return MultyFrameworkEditorTool.version; } }
         public override string author { get { return "OnClick"; } }
         public override string describtion { get { return _describtion; } }
        
         public override string[] dependences { get { return _dependences; } }
-        public override string helpurl { get { return MutiFrameworkEditorTool.frameworkUrl; } }
-        private string _userjsonPath { get { return MutiFrameworkEditorTool.rootPath + "/user.json"; } }
+        public override string helpurl { get { return MultyFrameworkEditorTool.frameworkUrl; } }
+        private string _userjsonPath { get { return MultyFrameworkEditorTool.rootPath + "/user.json"; } }
         private Encoding _encoding = Encoding.UTF8;
         private LoginInfo _loginInfo;
         private RegisterInfo _registerInfo;
-        private MutiFrameworkEditorTool.UploadInfo _uploadInfo;
+        private MultyFrameworkEditorTool.UploadInfo _uploadInfo;
         private UserJson _userJson;
         private bool _login;
 
@@ -276,7 +276,7 @@ namespace MutiFramework
                 GUILayout.FlexibleSpace();
                 if (GUILayout.Button(Contents.Go, GUILayout.Width(Contents.gap * 5)))
                 {
-                    MutiFrameworkEditorTool.CreateVersionJson(_uploadInfo.assetPath, _uploadInfo);
+                    MultyFrameworkEditorTool.CreateVersionJson(_uploadInfo.assetPath, _uploadInfo);
                     AssetDatabase.ExportPackage(_uploadInfo.assetPath, _uploadInfo.name + ".unitypackage", ExportPackageOptions.Recurse);
                     byte[] bytes = File.ReadAllBytes("Assets/../" + _uploadInfo.name + ".unitypackage");
                     PkgInfo form = new PkgInfo()
@@ -310,7 +310,7 @@ namespace MutiFramework
         {
             _loginInfo = new LoginInfo();
             _registerInfo = new RegisterInfo();
-            _uploadInfo = new MutiFrameworkEditorTool.UploadInfo();
+            _uploadInfo = new MultyFrameworkEditorTool.UploadInfo();
             _login = false;
             if (File.Exists(_userjsonPath))
             {

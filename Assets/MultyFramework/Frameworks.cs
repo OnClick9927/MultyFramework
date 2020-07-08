@@ -1,9 +1,9 @@
-﻿#if MutiFramework
+﻿#if MultyFramework
 using System;
 using System.Linq;
 using UnityEngine;
 
-namespace MutiFramework
+namespace MultyFramework
 {
     /// <summary>
     /// 框架入口
@@ -18,13 +18,13 @@ namespace MutiFramework
         /// <summary>
         /// 框架容器
         /// </summary>
-        public static MutiFrameworkContaner container;
+        public static MultyFrameworkContaner container;
         /// <summary>
         /// 开启
         /// </summary>
         static void Startup()
         {
-            container = new MutiFrameworkContaner();
+            container = new MultyFrameworkContaner();
             var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany((a) => { return a.GetTypes(); });
             types
                  .Where((type) => {
