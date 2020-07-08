@@ -83,7 +83,7 @@ namespace MultyFramework
                         GUILayout.Label(unityVersion);
                         GUILayout.FlexibleSpace();
 
-                        using (new EditorGUI.DisabledScope(_diskversion==version))
+                        using (new EditorGUI.DisabledScope(exist))
                         {
                             if (GUILayout.Button("Install",Styles.buttonLeft))
                             {
@@ -367,13 +367,7 @@ namespace MultyFramework
                 case WindowSelectType.WebCollection:
                 case WindowSelectType.InProject:
                 case WindowSelectType.Tools:
-                    if (SceneView.lastActiveSceneView != null) SceneView.lastActiveSceneView.sceneViewState.SetAllEnabled(true);
-                    if (Event.current.type== EventType.Repaint)
-                    {
-
-                    Graphics.DrawTexture(rect, _tx, _mat);
-                    }
-
+                  
                     RightSelectView(rect);
                     break;
                 default:
@@ -619,6 +613,7 @@ namespace MultyFramework
 
             _mat = AssetDatabase.LoadAssetAtPath<Material>("Assets/MultyFramework/Editor/Shader/Unlit_Water.mat"); 
             _tx= AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/MultyFramework/Editor/Shader/Gamemap.png");
+
         }
         public void FreshInPorject()
         {
@@ -690,6 +685,12 @@ namespace MultyFramework
                 }
                 else
                 {
+                    if (SceneView.lastActiveSceneView != null) SceneView.lastActiveSceneView.sceneViewState.SetAllEnabled(true);
+                    if (Event.current.type == EventType.Repaint)
+                    {
+                        Graphics.DrawTexture(new Rect(Vector2.zero,position.size), _tx, _mat);
+                    }
+
                     Rect r = GUILayoutUtility.GetLastRect();
                     _splitView.OnGUI(new Rect(new Vector2(0, r.yMax),
                           new Vector2(position.width, position.height - r.height)));

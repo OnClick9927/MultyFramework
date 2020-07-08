@@ -77,6 +77,7 @@ namespace MultyFramework
                 default:
                     break;
             }
+            GUILayout.Space(Contents.gap );
         }
 
         private void LoginGUI()

@@ -27,7 +27,7 @@ Material:
     - _A: 1
     - _Density: 10
     - _R: 1
-    - _RotateSpeed: 1.8
+    - _RotateSpeed: 0
     - _X: 0.5
     - _Y: 0.5
     m_Colors: []

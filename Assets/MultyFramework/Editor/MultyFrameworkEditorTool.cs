@@ -24,7 +24,7 @@ namespace MultyFramework
         }
 
         internal const string baidu = "https://www.baidu.com/";
-        internal const string frameworkUrl = "https://tdouguo.github.io/x/";
+        internal const string frameworkUrl = "https://upkg.org";
         internal const string version="0.0.0.1";
         internal const string framewokName = "MultyFramework";
         private const string userJsonName = "version.json";
@@ -130,12 +130,14 @@ namespace MultyFramework
         {
             string path = Path.Combine(assetPath, userJsonName);
             File.WriteAllText(path, JsonUtility.ToJson(info), encod);
+            AssetDatabase.Refresh();
         }
         internal static void RemovePakage(string path)
         {
             if (Directory.Exists(path))
             {
                 Directory.Delete(path, true);
+                File.Delete(path + ".meta");
                 AssetDatabase.Refresh();
             }
         }

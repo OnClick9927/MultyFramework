@@ -10,14 +10,14 @@ using UnityEngine.Networking;
 #pragma  warning disable 0649
 namespace MultyFramework
 {
-    abstract class MultyFrameworkDrawer: PanelGUIDrawer
+    abstract class MultyFrameworkDrawer : PanelGUIDrawer
     {
         protected static string token;
         public static class PkgConstant
         {
             public const string HOST = "https://upkg.org/api/";
-           // public const string HOST = "https://pkg.tdouguo.com/api/";
-           // public const string HOST = "http://127.0.0.1:5000/api/";
+            // public const string HOST = "https://pkg.tdouguo.com/api/";
+            // public const string HOST = "http://127.0.0.1:5000/api/";
 
             // user
             public const string API_LOGIN = HOST + "login";
@@ -94,7 +94,6 @@ namespace MultyFramework
                 responseModel.url = url;
                 return responseModel;
             }
-
             /// <summary>
             /// 
             /// </summary>
@@ -102,19 +101,14 @@ namespace MultyFramework
             /// <returns></returns>
             public bool CheckCode(bool disposeLogic = true)
             {
-                switch (code)
+                switch(code)
                 {
                     case (int)Code.OK:
-                        break;
-                    case (int)Code.AUTHORIZATION_ERROR:
-                        // todo: 重新登录
-                        return false;
+                        return true;
                     default:
-                        // todo: tip msg
+                        DisplayDialog("Err " + code, this.msg);
                         return false;
                 }
-
-                return true;
             }
         }
 
@@ -161,15 +155,15 @@ namespace MultyFramework
         public class PkgInfo
         {
             // todo:不写默认值是因为返回的结构也是使用此结构体 如果有默认值会造成失败时候也有数据了
-            public string pkg_name="";
-            public string version="";
-            public string permissions="";
-            public string dependences="";
-            public string author="";
-            public string describtion="";
-            public string help_url="";
-            public string pkg_path="";
-            public string unity_version="";
+            public string pkg_name = "";
+            public string version = "";
+            public string permissions = "";
+            public string dependences = "";
+            public string author = "";
+            public string describtion = "";
+            public string help_url = "";
+            public string pkg_path = "";
+            public string unity_version = "";
 
 
             public List<string> GetDependences()
@@ -216,7 +210,7 @@ namespace MultyFramework
                     req.SetRequestHeader("token", token);
                 }
 
-              //  req.SetRequestHeader("device_info", JsonUtility.ToJson(GetDeviceInfo()));
+                //  req.SetRequestHeader("device_info", JsonUtility.ToJson(GetDeviceInfo()));
                 req.SendWebRequest();
                 while (!req.isDone)
                 {
@@ -228,14 +222,14 @@ namespace MultyFramework
                     DisplayDialog("Err", string.Format("GetRequest url:{0}, error:{1}", req.url, req.error));
                     return;
                 }
-                if (callback!=null)
+                if (callback != null)
                 {
                     callback.Invoke(req);
                 }
                 req.Abort();
             }
 
-            private static void PostRequest(string url, WWWForm forms, Action<UnityWebRequest> callback,bool addToken = false)
+            private static void PostRequest(string url, WWWForm forms, Action<UnityWebRequest> callback, bool addToken = false)
             {
                 if (forms == null)
                 {
@@ -253,7 +247,7 @@ namespace MultyFramework
                     req.SetRequestHeader("token", token);
                 }
 
-              //  req.SetRequestHeader("device_info", JsonUtility.ToJson(GetDeviceInfo()));
+                //  req.SetRequestHeader("device_info", JsonUtility.ToJson(GetDeviceInfo()));
                 req.SendWebRequest();
                 while (!req.isDone)
                 {
@@ -273,7 +267,7 @@ namespace MultyFramework
                 req.Abort();
             }
 
-            private static void GetRequest<T>(string url, Dictionary<string, object> forms, Action<T> callback,bool addToken = false)where T : ResponseModel
+            private static void GetRequest<T>(string url, Dictionary<string, object> forms, Action<T> callback, bool addToken = false) where T : ResponseModel
             {
                 GetRequest(url, forms, (req) =>
                 {
@@ -283,8 +277,8 @@ namespace MultyFramework
                         DisplayDialog("Dispose Err", req.downloadHandler.text);
                         return;
                     }
-                    t.CheckCode(false);
-                    if (callback != null)
+                    bool bo = t.CheckCode(false);
+                    if (bo && callback != null)
                     {
                         callback.Invoke(t);
                     }
@@ -302,8 +296,8 @@ namespace MultyFramework
                         return;
                     }
 
-                    t.CheckCode(false);
-                    if (callback != null)
+                    bool bo = t.CheckCode(false);
+                    if (bo && callback != null)
                     {
                         callback.Invoke(t);
                     }
@@ -429,11 +423,11 @@ namespace MultyFramework
                         nReadSize = netStream.Read(nbytes, 0, packLength);
                         double dDownloadedLength = fs.Length * 1.0 / (1024 * 1024);
                         double dTotalLength = countLength * 1.0 / (1024 * 1024);
-                        string tip = string.Format("已下载 {0:F}M / {1:F}M", dDownloadedLength, dTotalLength);
-                        EditorUtility.DisplayProgressBar("Download pkg", tip, (float)(dDownloadedLength / dTotalLength));
+                        string tip = string.Format("Downloading {0:F}M / {1:F}M", dDownloadedLength, dTotalLength);
+                        DisplayProgressBar("Download pkg", tip, (float)(dDownloadedLength / dTotalLength));
                     }
 
-                    EditorUtility.ClearProgressBar();
+                    ClearProgressBar();
                     netStream.Close();
                     fs.Close();
                     onCompleted?.Invoke();
@@ -519,7 +513,7 @@ namespace MultyFramework
 
         protected virtual void ToolGUI()
         {
-           
+
         }
 
     }

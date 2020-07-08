@@ -42,9 +42,8 @@ class StandardExampleClass
 
 
 # How To Use
- ###  Do Not Forget Add Macro definition MutiFramework
-![result](http://file.liangxiegame.com/4578b0b9-2975-4a0e-b89a-26c1be7ddf65.png)
- ### Extend MutiFramework by your codes
+
+ ### Extend MultyFramework by your codes
  ``` csharp
  [Framework(Environment.Editor | Environment.Runtime)]    //which mode your Framework suport
 public class ExampleFrame1 : UpdateFramework
@@ -66,7 +65,7 @@ public class ExampleFrame1 : UpdateFramework
     }
 }
  ```
-  ### Extend MutiFramework EditorWindow Tools by your codes
+  ### Extend MultyFramework EditorWindow Tools by your codes
  ``` csharp
 public class ExampleToolLine : ToolDrawer
 {
