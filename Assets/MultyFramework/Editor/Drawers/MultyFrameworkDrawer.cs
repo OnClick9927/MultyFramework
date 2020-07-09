@@ -7,12 +7,12 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
 
+
 #pragma  warning disable 0649
 namespace MultyFramework
 {
-    abstract class MultyFrameworkDrawer : PanelGUIDrawer
+    public abstract class MultyFrameworkDrawer : PanelGUIDrawer
     {
-        protected static string token;
         public static class PkgConstant
         {
             public const string HOST = "https://upkg.org/api/";
@@ -202,12 +202,12 @@ namespace MultyFramework
                 var req = UnityWebRequest.Get(newUrl);
                 if (addToken)
                 {
-                    if (string.IsNullOrEmpty(token))
+                    if (string.IsNullOrEmpty(_token))
                     {
                         ShowNotification("token is Null , Please Login First");
                         return;
                     }
-                    req.SetRequestHeader("token", token);
+                    req.SetRequestHeader("token", _token);
                 }
 
                 //  req.SetRequestHeader("device_info", JsonUtility.ToJson(GetDeviceInfo()));
@@ -239,12 +239,12 @@ namespace MultyFramework
                 var req = UnityWebRequest.Post(url, forms);
                 if (addToken)
                 {
-                    if (string.IsNullOrEmpty(token))
+                    if (string.IsNullOrEmpty(_token))
                     {
                         ShowNotification("token is Null , Please Login First");
                         return;
                     }
-                    req.SetRequestHeader("token", token);
+                    req.SetRequestHeader("token", _token);
                 }
 
 
@@ -406,7 +406,7 @@ namespace MultyFramework
                 string url = PkgConstant.API_DOWNLOAD_PKG;
                 url += "?pkg_name=" + pkgName;
                 url += "&version=" + version;
-                url += "&token=" + token;
+                url += "&token=" + _token;
                 HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(url);
                 request.Timeout = 5000;
                 WebResponse response = request.GetResponse();
@@ -436,6 +436,14 @@ namespace MultyFramework
             }
             #endregion
         }
+
+
+
+
+       
+
+
+
 
         private bool _describtionFold = true;
         private bool _dependencesFold = true;
@@ -517,6 +525,202 @@ namespace MultyFramework
 
         }
 
+
+
+
+       
+        protected class LoginInfo
+        {
+            public string email;
+            public string password;
+            public bool see;
+        }
+        protected class RegisterInfo
+        {
+            public string email;
+            public string password;
+            public string nick_name;
+        }
+        public class UploadInfo
+        {
+            public string unityVersion { get { return Application.unityVersion; } }
+            public bool isPublic = true;
+            public string name = "pkg name";
+            public string version = "0.0.0.1";
+            public string author = "author";
+            public string describtion = "No Describtion ";
+            public string assetPath = "Assets";
+            public string helpurl = MultyFrameworkEditorTool.baidu;
+            public List<string> dependences = new List<string>();
+        }
+
+
+
+
+
+
+
+        private static string _userjsonPath { get { return MultyFrameworkEditorTool.rootPath + "/user.json"; } }
+        protected static bool _login { get { return window.multyDrawersInfo.login; } }
+        protected static string _token { get { return window.multyDrawersInfo.token; } }
+        protected static MultyFrameworkDrawersInfo.UserJson _userJson { get { return window.multyDrawersInfo.userJson; } }
+
+
+        public static void Init()
+        {
+            window.multyDrawersInfo = new MultyFrameworkDrawersInfo();
+            window.multyDrawersInfo.userJson = CheckUserJson();
+            LoginWithToken();
+        }
+        private static MultyFrameworkDrawersInfo.UserJson CheckUserJson()
+        {
+            if (File.Exists(_userjsonPath))
+            {
+               return JsonUtility.FromJson<MultyFrameworkDrawersInfo.UserJson>(File.ReadAllText(_userjsonPath));
+            }
+            return new MultyFrameworkDrawersInfo.UserJson();
+        }
+        private static void FreshWebCollection()
+        {
+            window.multyDrawersInfo.selfInfos.Clear();
+            window.multyDrawersInfo.infos.Clear();
+
+            HttpPkg.GetPkgInfoList((m) => {
+                var names = m.data;
+                for (int i = 0; i < names.Count; i++)
+                {
+                    HttpPkg.GetPkgInfos(names[i],
+                        (model) => {
+                            WebCollectionInfo info = new WebCollectionInfo()
+                            {
+                                name = names[i],
+                                author = model.data[0].author,
+                            };
+                            WebCollectionInfo.Version[] versions = new WebCollectionInfo.Version[model.data.Count];
+                            for (int j = 0; j < model.data.Count; j++)
+                            {
+                                versions[j] = new WebCollectionInfo.Version()
+                                {
+                                    version = model.data[j].version,
+                                    describtion = model.data[j].describtion,
+                                    dependences = model.data[j].GetDependences().ToArray(),
+                                    helpurl = model.data[j].help_url,
+                                    unityVersion = model.data[j].unity_version,
+                                    assetPath = model.data[j].pkg_path,
+                                };
+                            }
+                            info.versions = versions;
+                            window.multyDrawersInfo.infos.Add(info);
+                            if (i == names.Count - 1)
+                            {
+                                if (!string.IsNullOrEmpty(window.multyDrawersInfo.userJson.name))
+                                {
+                                    for (int j = 0; j < window.multyDrawersInfo.infos.Count; j++)
+                                    {
+                                        if (window.multyDrawersInfo.infos[j].author == window.multyDrawersInfo.userJson.name)
+                                        {
+                                            window.multyDrawersInfo.selfInfos.Add(window.multyDrawersInfo.infos[j]);
+                                        }
+                                    }
+                                }
+                                window.multyDrawersInfo.FreshDrawers();
+                            }
+                        });
+                }
+            });
+        }
+
+
+        protected static void ClearUserJson()
+        {
+            window.multyDrawersInfo.userJson = new MultyFrameworkDrawersInfo.UserJson();
+            window.multyDrawersInfo.login = false;
+            if (File.Exists(_userjsonPath))
+            {
+                File.Delete(_userjsonPath);
+            }
+            window.multyDrawersInfo.infos.Clear();
+            window.multyDrawersInfo.selfInfos.Clear();
+            window.multyDrawersInfo.FreshDrawers(); 
+        }
+
+
+
+        protected static void TryLogin(string email,string password)
+        {
+            HttpPkg.Login(email, password, (model) =>
+            {
+                WriteUserJson(email, model.data.token, model.data.nick_name);
+                FreshWebCollection();
+            });
+        }
+        private static void WriteUserJson(string email,string token,string name)
+        {
+            window.multyDrawersInfo.login = true;
+            window.multyDrawersInfo.userJson = new MultyFrameworkDrawersInfo.UserJson()
+            {
+                email = email,
+                token = token,
+                name = name
+            };
+
+            File.WriteAllText(_userjsonPath, JsonUtility.ToJson(window.multyDrawersInfo.userJson, true));
+        }
+
+        protected static void Signup(string name,string email,string password)
+        {
+            HttpPkg.Signup(name, email, password, (model) =>
+            {
+
+                WriteUserJson(email, model.data.token, name);
+                ShowNotification("Success");
+                LoginWithToken();
+            });
+
+        }
+
+        private static void LoginWithToken()
+        {
+            window.multyDrawersInfo.login = false;
+            HttpPkg.CheckToken(
+            _token
+            , (model) =>
+            {
+                window.multyDrawersInfo.login = true;
+            });
+            if (window.multyDrawersInfo.login)
+            {
+                FreshWebCollection();
+            }
+        }
+
+
+        protected static void UploadPkg(UploadInfo uploadInfo)
+        {
+            MultyFrameworkEditorTool.CreateVersionJson(uploadInfo.assetPath, uploadInfo);
+            AssetDatabase.ExportPackage(uploadInfo.assetPath, uploadInfo.name + ".unitypackage", ExportPackageOptions.Recurse);
+            byte[] bytes = File.ReadAllBytes("Assets/../" + uploadInfo.name + ".unitypackage");
+            PkgInfo form = new PkgInfo()
+            {
+                unity_version = uploadInfo.unityVersion,
+                author = uploadInfo.author,
+                pkg_path = uploadInfo.assetPath,
+                pkg_name = uploadInfo.name,
+                version = uploadInfo.version,
+                permissions = uploadInfo.isPublic ? PkgConstant.PKG_PERMISSIONS_PUBLIC : PkgConstant.PKG_PERMISSIONS_PRIVATE,
+                help_url = uploadInfo.helpurl,
+                describtion = uploadInfo.describtion,
+            };
+            for (int i = 0; i < uploadInfo.dependences.Count; i++)
+            {
+                form.AddDependences(uploadInfo.dependences[i]);
+            }
+            HttpPkg.UploadPkg(form, bytes, (m) => {
+                File.Delete("Assets/../" + uploadInfo.name + ".unitypackage");
+                ShowNotification("Success");
+                FreshWebCollection();
+            });
+        }
     }
 }
 

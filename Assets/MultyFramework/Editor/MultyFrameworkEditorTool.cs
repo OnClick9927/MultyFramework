@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,19 +9,6 @@ namespace MultyFramework
 {
     class MultyFrameworkEditorTool
     {
-        public class UploadInfo
-        {
-            public string unityVersion { get { return Application.unityVersion; } }
-            public bool isPublic = true;
-            public string name = "pkg name";
-            public string version = "0.0.0.1";
-            public string author = "author";
-            public string describtion = "No Describtion ";
-            public string assetPath = "Assets";
-            public string helpurl = MultyFrameworkEditorTool.baidu;
-            public List<string> dependences = new List<string>();
-        }
-
         internal const string baidu = "https://www.baidu.com/";
         internal const string frameworkUrl = "https://upkg.org";
         internal const string version="0.0.0.1";
@@ -122,11 +108,11 @@ namespace MultyFramework
             string path = Path.Combine(assetPath, userJsonName);
             if (File.Exists(path))
             {
-                version=JsonUtility.FromJson<UploadInfo>(File.ReadAllText(path,encod)).version;
+                version=JsonUtility.FromJson<MultyFrameworkDrawer.UploadInfo>(File.ReadAllText(path,encod)).version;
             }
             return version;
         }
-        internal static void CreateVersionJson(string assetPath,UploadInfo info)
+        internal static void CreateVersionJson(string assetPath, MultyFrameworkDrawer.UploadInfo info)
         {
             string path = Path.Combine(assetPath, userJsonName);
             File.WriteAllText(path, JsonUtility.ToJson(info), encod);

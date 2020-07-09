@@ -9,24 +9,6 @@ namespace MultyFramework
 {
     class UserOperationDrawer : MultyFrameworkDrawer
     {
-        private class UserJson
-        {
-            public string email;
-            public string token;
-            public string name;
-        }
-        private class LoginInfo
-        {
-            public string email;
-            public string password;
-            public bool see;
-        }
-        private class RegisterInfo
-        {
-            public string email;
-            public string password;
-            public string nick_name;
-        }
 
         private enum UserOperation
         {
@@ -47,13 +29,13 @@ namespace MultyFramework
        
         public override string[] dependences { get { return _dependences; } }
         public override string helpurl { get { return MultyFrameworkEditorTool.frameworkUrl; } }
-        private string _userjsonPath { get { return MultyFrameworkEditorTool.rootPath + "/user.json"; } }
+
         private Encoding _encoding = Encoding.UTF8;
         private LoginInfo _loginInfo;
         private RegisterInfo _registerInfo;
-        private MultyFrameworkEditorTool.UploadInfo _uploadInfo;
-        private UserJson _userJson;
-        private bool _login;
+        private UploadInfo _uploadInfo;
+
+
 
         protected override void ToolGUI()
         {
@@ -88,25 +70,13 @@ namespace MultyFramework
                 GUILayout.FlexibleSpace();
                 if (GUILayout.Button("Logout"))
                 {
-                    _login = false;
-                    _userJson = new UserJson();
-                    if (File.Exists(_userjsonPath))
-                    {
-                        File.Delete(_userjsonPath);
-                    }
+                    ClearUserJson();
                 }
                 GUILayout.EndHorizontal();
                 GUILayout.Space(Contents.gap);
 
                 GUILayout.Label("Self Web Packages", Styles.in_title);
-                Rect rect = GUILayoutUtility.GetLastRect();
-                rect.xMin = rect.xMax - 20;
-                rect.width = 20;
-                
-                if (GUI.Button(rect,Contents.refresh))
-                {
-                    FreshWebCollection();
-                }
+                var _selfInfos = window.multyDrawersInfo.selfInfos;
                 for (int i = 0; i < _selfInfos.Count; i++)
                 {
                     for (int j = 0; j < _selfInfos[i].versions.Length; j++)
@@ -115,9 +85,10 @@ namespace MultyFramework
                         GUILayout.Label(_selfInfos[i].name);
                         GUILayout.Label(_selfInfos[i].versions[j].unityVersion);
                         GUILayout.Label(_selfInfos[i].versions[j].version);
-                        if (GUILayout.Button("",Styles.minus,GUILayout.Width(Contents.gap*2)))
+                        if (GUILayout.Button("", Styles.minus, GUILayout.Width(Contents.gap * 2)))
                         {
-                            HttpPkg.DeletePkg(_selfInfos[i].name, _selfInfos[i].versions[j].version, (m) => {
+                            HttpPkg.DeletePkg(_selfInfos[i].name, _selfInfos[i].versions[j].version, (m) =>
+                            {
                                 ShowNotification("Delete Sucess");
                             });
                         }
@@ -163,18 +134,7 @@ namespace MultyFramework
                             ShowNotification("Err: password is null");
                             return;
                         }
-                        HttpPkg.Login(_loginInfo.email, _loginInfo.password,(model)=> {
-                            _login = true;
-                            _userJson = new UserJson()
-                            {
-                                email = _loginInfo.email,
-                                token = model.data.token,
-                                name=model.data.nick_name
-                            };
-                            token = model.data.token;
-                            File.WriteAllText(_userjsonPath, JsonUtility.ToJson(_userJson, true), _encoding);
-                            FreshWebCollection();
-                        });
+                        TryLogin(_loginInfo.email, _loginInfo.password);
                     }
                     GUILayout.EndHorizontal();
                 }
@@ -205,18 +165,7 @@ namespace MultyFramework
                     ShowNotification("Err: Name is null");
                     return;
                 }
-                HttpPkg.Signup(_registerInfo.nick_name, _registerInfo.email, _registerInfo.password,(model)=> {
-                    _userJson = new UserJson()
-                    {
-                        email = _registerInfo.email,
-                        token = model.data.token,
-                        name = _registerInfo.nick_name
-                    };
-                    token = model.data.token;
-                    File.WriteAllText(_userjsonPath, JsonUtility.ToJson(_userJson, true), _encoding);
-                    ShowNotification("Success");
-                    LoginWithToken();
-                });
+                Signup(_registerInfo.nick_name, _registerInfo.email, _registerInfo.password);
             }
             GUILayout.EndHorizontal();
         }
@@ -278,29 +227,7 @@ namespace MultyFramework
                 GUILayout.FlexibleSpace();
                 if (GUILayout.Button(Contents.Go, GUILayout.Width(Contents.gap * 5)))
                 {
-                    MultyFrameworkEditorTool.CreateVersionJson(_uploadInfo.assetPath, _uploadInfo);
-                    AssetDatabase.ExportPackage(_uploadInfo.assetPath, _uploadInfo.name + ".unitypackage", ExportPackageOptions.Recurse);
-                    byte[] bytes = File.ReadAllBytes("Assets/../" + _uploadInfo.name + ".unitypackage");
-                    PkgInfo form = new PkgInfo()
-                    {
-                        unity_version = _uploadInfo.unityVersion,
-                        author = _uploadInfo.author,
-                        pkg_path = _uploadInfo.assetPath,
-                        pkg_name = _uploadInfo.name,
-                        version = _uploadInfo.version,
-                        permissions = _uploadInfo.isPublic ? PkgConstant.PKG_PERMISSIONS_PUBLIC : PkgConstant.PKG_PERMISSIONS_PRIVATE,
-                        help_url = _uploadInfo.helpurl,
-                        describtion = _uploadInfo.describtion,
-                    };
-                    for (int i = 0; i < _uploadInfo.dependences.Count; i++)
-                    {
-                        form.AddDependences(_uploadInfo.dependences[i]);
-                    }
-                    HttpPkg.UploadPkg(form, bytes, (m) => {
-                        File.Delete("Assets/../" + _uploadInfo.name + ".unitypackage");
-                        ShowNotification("Success");
-                        FreshWebCollection();
-                    });
+                    UploadPkg(_uploadInfo);
                 }
                 GUILayout.EndHorizontal();
 
@@ -312,95 +239,10 @@ namespace MultyFramework
         {
             _loginInfo = new LoginInfo();
             _registerInfo = new RegisterInfo();
-            _uploadInfo = new MultyFrameworkEditorTool.UploadInfo();
-            _login = false;
-            if (File.Exists(_userjsonPath))
-            {
-                _userJson = JsonUtility.FromJson<UserJson>(File.ReadAllText(_userjsonPath));
-                token = _userJson.token;
-                LoginWithToken();
-            }
-            else
-            {
-                _userJson = new UserJson();
-                token = _userJson.token;
-                if (window.needReload)
-                {
-                    FreshWebCollection();
-                }
-            }
+            _uploadInfo = new UploadInfo();
         }
 
-        private void LoginWithToken()
-        {
-            HttpPkg.CheckToken(
-                _userJson.token
-                , (model) =>
-                {
-                    _login = true;
-                    if (window.needReload)
-                    {
-                        FreshWebCollection();
-                    }
-                });
-        }
-        private void FreshWebCollection()
-        {
-            HttpPkg.GetPkgInfoList((m) => {
-                var names = m.data;
-                for (int i = 0; i < names.Count; i++)
-                {
-                    HttpPkg.GetPkgInfos(names[i],  
-                        (model) => {
-                            CollectionInfo info = new CollectionInfo()
-                            {
-                                name= names[i],
-                                author = model.data[0].author,
-                            };
-                            CollectionInfo.Version[] versions = new CollectionInfo.Version[model.data.Count];
-                            for (int j = 0; j < model.data.Count; j++)
-                            {
-                                versions[j] = new CollectionInfo.Version()
-                                {
-                                    version = model.data[j].version,
-                                    describtion = model.data[j].describtion,
-                                    dependences = model.data[j].GetDependences().ToArray(),
-                                    helpurl = model.data[j].help_url,
-                                    unityVersion = model.data[j].unity_version,
-                                    assetPath = model.data[j].pkg_path,
-                                };
-                            }
-                            info.versions = versions;
-                            CollectInfos(info, i, names.Count);
-                        });
-                }
-            });
-        }
-        private List<CollectionInfo> _selfInfos = new List<CollectionInfo>();
-        private List<CollectionInfo> _infos = new List<CollectionInfo>();
-        private void CollectInfos(CollectionInfo info,int index,int count)
-        {
-            if (index==0)
-            {
-                _infos.Clear();
-            }
-            _infos.Add(info);
-            if (index==count-1)
-            {
-                if (_login)
-                {
-                    _selfInfos.Clear();
-                    for (int i = 0; i < _infos.Count; i++)
-                    {
-                        if (_infos[i].author == _userJson.name)
-                        {
-                            _selfInfos.Add(_infos[i]);
-                        }
-                    }
-                }
+      
 
-                window.FreshCollection(_infos);
-            }
-        }
     }
 }

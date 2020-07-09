@@ -5,7 +5,7 @@ namespace MultyFramework
     /// 网上的条目
     /// </summary>
     [Serializable]
-    public class CollectionInfo
+    public class WebCollectionInfo
     {
         [Serializable]
         public class Version
@@ -34,8 +34,8 @@ namespace MultyFramework
         /// </summary>
         public Version[] versions;
 
-        public CollectionInfo() { }
-        public CollectionInfo(string name, string author, Version[] versions)
+        public WebCollectionInfo() { }
+        public WebCollectionInfo(string name, string author, Version[] versions)
         {
             this.name = name;
             this.author = author;
