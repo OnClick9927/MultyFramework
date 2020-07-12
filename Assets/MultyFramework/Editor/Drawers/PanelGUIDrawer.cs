@@ -10,7 +10,9 @@ namespace MultyFramework
     {
         protected class Styles
         {
-            public static GUIStyle header = "AM MixerHeader2";
+            public static GUIStyle header = new GUIStyle("BoldLabel") {
+                fontSize=18
+            };
             public static GUIStyle in_title = "IN Title";
             public static GUIStyle boldLabel = "BoldLabel";
             public static GUIStyle controlLabel = "ControlLabel";

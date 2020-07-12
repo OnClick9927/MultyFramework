@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
 
-
+#pragma  warning disable 0414
 #pragma  warning disable 0649
 namespace MultyFramework
 {
@@ -101,7 +102,7 @@ namespace MultyFramework
             /// <returns></returns>
             public bool CheckCode(bool disposeLogic = true)
             {
-                switch(code)
+                switch (code)
                 {
                     case (int)Code.OK:
                         return true;
@@ -175,14 +176,14 @@ namespace MultyFramework
             {
                 var d = GetDependences().ToList();
                 d.Add(pkgName);
-                dependences = string.Join(",", d);
+                dependences = string.Join(",", d.ToArray());
             }
 
             public void RemoveDependences(string pkgName)
             {
                 var d = GetDependences().ToList();
                 d.Remove(pkgName);
-                dependences = string.Join(",", d);
+                dependences = string.Join(",", d.ToArray());
             }
         }
         public class HttpPkg
@@ -214,7 +215,7 @@ namespace MultyFramework
                 req.SendWebRequest();
                 while (!req.isDone)
                 {
-                    DisplayProgressBar("Post Request", req.uri.Host, req.downloadProgress);
+                    DisplayProgressBar("Post Request", "", req.downloadProgress);
                 }
                 ClearProgressBar();
                 if (!string.IsNullOrEmpty(req.error))
@@ -312,7 +313,10 @@ namespace MultyFramework
                 GetRequest<LoginModel>(PkgConstant.API_LOGIN, null, (m) =>
                 {
                     m.data.token = token;
-                    callback?.Invoke(m);
+                    if (callback != null)
+                    {
+                        callback(m);
+                    }
                 }, true);
             }
 
@@ -431,7 +435,10 @@ namespace MultyFramework
                     ClearProgressBar();
                     netStream.Close();
                     fs.Close();
-                    onCompleted?.Invoke();
+                    if (onCompleted != null)
+                    {
+                        onCompleted();
+                    }
                 }
             }
             #endregion
@@ -440,10 +447,11 @@ namespace MultyFramework
 
 
 
-       
 
 
 
+
+        private static Encoding _encoding = Encoding.UTF8;
 
         private bool _describtionFold = true;
         private bool _dependencesFold = true;
@@ -528,7 +536,7 @@ namespace MultyFramework
 
 
 
-       
+
         protected class LoginInfo
         {
             public string email;
@@ -576,7 +584,7 @@ namespace MultyFramework
         {
             if (File.Exists(_userjsonPath))
             {
-               return JsonUtility.FromJson<MultyFrameworkDrawersInfo.UserJson>(File.ReadAllText(_userjsonPath));
+                return JsonUtility.FromJson<MultyFrameworkDrawersInfo.UserJson>(File.ReadAllText(_userjsonPath, _encoding));
             }
             return new MultyFrameworkDrawersInfo.UserJson();
         }
@@ -641,12 +649,12 @@ namespace MultyFramework
             }
             window.multyDrawersInfo.infos.Clear();
             window.multyDrawersInfo.selfInfos.Clear();
-            window.multyDrawersInfo.FreshDrawers(); 
+            window.multyDrawersInfo.FreshDrawers();
         }
 
 
 
-        protected static void TryLogin(string email,string password)
+        protected static void TryLogin(string email, string password)
         {
             HttpPkg.Login(email, password, (model) =>
             {
@@ -654,7 +662,7 @@ namespace MultyFramework
                 FreshWebCollection();
             });
         }
-        private static void WriteUserJson(string email,string token,string name)
+        private static void WriteUserJson(string email, string token, string name)
         {
             window.multyDrawersInfo.login = true;
             window.multyDrawersInfo.userJson = new MultyFrameworkDrawersInfo.UserJson()
@@ -664,10 +672,10 @@ namespace MultyFramework
                 name = name
             };
 
-            File.WriteAllText(_userjsonPath, JsonUtility.ToJson(window.multyDrawersInfo.userJson, true));
+            File.WriteAllText(_userjsonPath, JsonUtility.ToJson(window.multyDrawersInfo.userJson, true), _encoding);
         }
 
-        protected static void Signup(string name,string email,string password)
+        protected static void Signup(string name, string email, string password)
         {
             HttpPkg.Signup(name, email, password, (model) =>
             {

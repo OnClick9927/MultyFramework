@@ -42,7 +42,7 @@ namespace MultyFramework
             _versionSelect = 0;
         }
         private int _versionSelect;
-        private string _diskversion;
+
         private bool _describtionFold = true;
         private bool _dependencesFold = true;
         private Vector2 _scroll;
@@ -50,16 +50,12 @@ namespace MultyFramework
 
         public override void OnEnable()
         {
-            _diskversion = string.Empty;
             _versionNames = new string[versions.Length];
             for (int i = 0; i < versions.Length; i++)
             {
                 _versionNames[i] = "v " + versions[i].version;
             }
-            if (exist)
-            {
-                _diskversion = MultyFrameworkEditorTool.ReadDiskVersion(assetPath);
-            }
+           
         }
 
         public override void OnGUI(Rect rect)
@@ -153,7 +149,7 @@ namespace MultyFramework
         private void InstallPakage()
         {
             MultyFrameworkEditorTool.RemovePakage(assetPath);
-            string path = $"{MultyFrameworkEditorTool.rootPath}/{name}_{version}.unitypackage";
+            string path = string.Format("{0}/{1}_{2}.unitypackage", MultyFrameworkEditorTool.rootPath, name, version);
             Directory.CreateDirectory(Path.GetDirectoryName(path));
             HttpPkg.DownloadPkg(name, version, path, () =>
             {

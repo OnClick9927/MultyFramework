@@ -30,7 +30,6 @@ namespace MultyFramework
         public override string[] dependences { get { return _dependences; } }
         public override string helpurl { get { return MultyFrameworkEditorTool.frameworkUrl; } }
 
-        private Encoding _encoding = Encoding.UTF8;
         private LoginInfo _loginInfo;
         private RegisterInfo _registerInfo;
         private UploadInfo _uploadInfo;

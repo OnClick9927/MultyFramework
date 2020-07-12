@@ -20,7 +20,7 @@ namespace MultyFramework
         static MethodInfo _InitWebView;
         static MethodInfo _SetDelegateObject;
         static MethodInfo _AllowRightClickMenu;
-        static MethodInfo _ShowDevTools;
+        //static MethodInfo _ShowDevTools;
         static MethodInfo _DefineScriptObject;
         static MethodInfo _SetHostView;
         static MethodInfo _ExecuteJavascript;
@@ -43,7 +43,7 @@ namespace MultyFramework
             _SetHostView = (_T.GetMethod("SetHostView", Instance));
             _AllowRightClickMenu = (_T.GetMethod("AllowRightClickMenu", Instance));
             _SetDelegateObject = (_T.GetMethod("SetDelegateObject", Instance));
-            _ShowDevTools = (_T.GetMethod("ShowDevTools", Instance));
+            //_ShowDevTools = (_T.GetMethod("ShowDevTools", Instance));
             _DefineScriptObject = (_T.GetMethod("DefineScriptObject", Instance));
             _ExecuteJavascript = (_T.GetMethod("ExecuteJavascript", Instance));
             _LoadURL = (_T.GetMethod("LoadURL", Instance));

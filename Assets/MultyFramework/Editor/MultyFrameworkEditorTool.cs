@@ -47,7 +47,7 @@ namespace MultyFramework
                  .Where((type) => {
                      return !type.IsAbstract && type.IsSubclassOf(typeof(Framework)) &&
                          type.IsDefined(typeof(FrameworkAttribute), false) &&
-                         (type.GetCustomAttributes(typeof(FrameworkAttribute), false).First() as FrameworkAttribute).env.HasFlag(EnvironmentType.Editor);
+                          ((type.GetCustomAttributes(typeof(FrameworkAttribute), false).First() as FrameworkAttribute).env & EnvironmentType.Editor) != 0;
                  })
                  .Select((type) => {
                      Framework f = Activator.CreateInstance(type) as Framework;
@@ -76,7 +76,7 @@ namespace MultyFramework
                  .Where((type) => {
                      return !type.IsAbstract && type.IsSubclassOf(typeof(Framework)) &&
                          type.IsDefined(typeof(FrameworkAttribute), false) &&
-                         (type.GetCustomAttributes(typeof(FrameworkAttribute), false).First() as FrameworkAttribute).env.HasFlag(EnvironmentType.Runtime);
+                        ((type.GetCustomAttributes(typeof(FrameworkAttribute), false).First() as FrameworkAttribute).env & EnvironmentType.Runtime) != 0;
                  })
                  .Select((type) => {
                      Framework f = Activator.CreateInstance(type) as Framework;

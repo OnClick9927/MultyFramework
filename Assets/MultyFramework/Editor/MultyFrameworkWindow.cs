@@ -10,10 +10,8 @@ namespace MultyFramework
     {
         class Styles
         {
-            public static GUIStyle box = "box";
+            public static GUIStyle box = "box"; 
             public static GUIStyle in_title = new GUIStyle("IN Title") { fixedHeight = toolbarHeight + 5 };
-            public static GUIStyle settingsHeader = "SettingsHeader";
-            public static GUIStyle header = "DD HeaderStyle";
             public static GUIStyle toolbarSeachTextFieldPopup = "ToolbarSeachTextFieldPopup";
             public static GUIStyle searchTextField = new GUIStyle("ToolbarTextField")
             {
