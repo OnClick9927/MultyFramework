@@ -401,9 +401,8 @@ namespace MultyFramework
             /// <param name="version">版本为空则获取最新, 赋值则获取指定版本的</param>
             public static void GetPkgInfoList(Action<PkgInfoListModel> callback)
             {
-                PostRequest<PkgInfoListModel>(PkgConstant.API_PKG_INFO_LIST, null, callback, true);
+                GetRequest<PkgInfoListModel>(PkgConstant.API_PKG_INFO_LIST, null, callback, true);
             }
-
 
             public static void DownloadPkg(string pkgName, string version, string downloadPath, Action onCompleted)
             {
@@ -411,35 +410,15 @@ namespace MultyFramework
                 url += "?pkg_name=" + pkgName;
                 url += "&version=" + version;
                 url += "&token=" + _token;
-                HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(url);
-                request.Timeout = 5000;
-                WebResponse response = request.GetResponse();
-                using (FileStream fs = new FileStream(downloadPath, FileMode.Create))
-                using (Stream netStream = response.GetResponseStream())
-                {
-                    int packLength = 1024 * 20;
-                    long countLength = response.ContentLength;
-                    byte[] nbytes = new byte[packLength];
-                    int nReadSize = 0;
-                    nReadSize = netStream.Read(nbytes, 0, packLength);
-                    while (nReadSize > 0)
-                    {
-                        fs.Write(nbytes, 0, nReadSize);
-                        nReadSize = netStream.Read(nbytes, 0, packLength);
-                        double dDownloadedLength = fs.Length * 1.0 / (1024 * 1024);
-                        double dTotalLength = countLength * 1.0 / (1024 * 1024);
-                        string tip = string.Format("Downloading {0:F}M / {1:F}M", dDownloadedLength, dTotalLength);
-                        DisplayProgressBar("Download pkg", tip, (float)(dDownloadedLength / dTotalLength));
-                    }
 
-                    ClearProgressBar();
-                    netStream.Close();
-                    fs.Close();
+                GetRequest(url, null, (req) =>
+                {
+                    File.WriteAllBytes(downloadPath, req.downloadHandler.data);
                     if (onCompleted != null)
                     {
                         onCompleted();
                     }
-                }
+                });
             }
             #endregion
         }
