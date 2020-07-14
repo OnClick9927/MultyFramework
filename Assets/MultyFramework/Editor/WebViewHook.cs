@@ -178,7 +178,8 @@ namespace MultyFramework
 
         public void LoadHTML(string html)
         {
-            Invoke(_LoadURL, "data:text/html;charset=utf-8," + html);
+            Invoke(_LoadURL, "data:text/html;charset=utf-8;base64," + html);
+            // Debug.Log(html);
         }
 
         public void LoadFile(string path)

@@ -36,7 +36,7 @@ namespace MultyFramework
                 _webView.Reload();
             if (GUI.Button(new Rect(rect.x + 75, rect.y, 25, 20), "→"))
                 _webView.LoadURL(helpurl);
-            if (GUI.Button(new Rect(rect.x + 100, rect.y, 25, 20), Contents.help,Styles.boldLabel))
+            if (GUI.Button(new Rect(rect.x + 100, rect.y, 25, 20), Contents.help, Styles.boldLabel))
                 Help.BrowseURL(helpurl);
             GUI.SetNextControlName("urlfield");
             var ev = Event.current;
@@ -48,7 +48,7 @@ namespace MultyFramework
                     _webView.SetApplicationFocus(true);
                     ev.Use();
                 }
-            if (ev.type == EventType.Repaint)
+            if (Event.current.type == EventType.Repaint)
             {
                 _webView.OnGUI(rect.Zoom(AnchorType.LowerCenter, new Vector2(0, -20)));
             }

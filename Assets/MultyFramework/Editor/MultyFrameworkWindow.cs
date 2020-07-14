@@ -158,7 +158,6 @@ namespace MultyFramework
 
 
 
-
         private void SplitFirstView(Rect rect)
         {
             rect = rect.Zoom(AnchorType.MiddleCenter, -5);
@@ -184,11 +183,14 @@ namespace MultyFramework
             GUILayout.EndArea();
             GUI.EndClip();
         }
+        public float secondwidth;
+
         private void SplitSecondView(Rect rect)
         {
+            secondwidth = rect.width;
             GUI.BeginClip(rect);
             rect.Set(0, 0, rect.width, rect.height);
-            rect = rect.Zoom(AnchorType.MiddleCenter, -15);
+            rect = rect.Zoom(AnchorType.UpperCenter, -20);
             switch (_windowSelectType)
             {
                 case WindowSelectType.ReadMe:
@@ -396,7 +398,7 @@ namespace MultyFramework
             //  else if (ev.keyCode == KeyCode.A && (ev.control | ev.command))
 
 
-            if (ev.type == EventType.Repaint)
+            if (Event.current.type == EventType.Repaint)
             {
                 // keep the browser aware with resize
                 _webView.OnGUI(rect.Zoom(AnchorType.LowerCenter, new Vector2(0, -20)));
@@ -433,8 +435,6 @@ namespace MultyFramework
             _tools = GetMultyFrameworkTools(types).Concat(GetTools(types)).ToList();
             _tools.ForEach((f) => { f.Awake(); });
 
-            _mat = AssetDatabase.LoadAssetAtPath<Material>("Assets/MultyFramework/Editor/Shader/Unlit_Water.mat");
-            _tx = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/MultyFramework/Editor/Shader/Gamemap.png");
             multyDrawersInfo.FreshDrawers();
         }
 
@@ -482,16 +482,6 @@ namespace MultyFramework
                 }
                 else
                 {
-#if UNITY_2019_OR_NEWER
-                    if (SceneView.lastActiveSceneView != null) SceneView.lastActiveSceneView.sceneViewState.SetAllEnabled(true);
-#else
-                    if (SceneView.lastActiveSceneView != null) SceneView.lastActiveSceneView.sceneViewState.Toggle(true);
-#endif
-                    if (Event.current.type == EventType.Repaint)
-                    {
-                        Graphics.DrawTexture(new Rect(Vector2.zero, position.size), _tx, _mat);
-                    }
-
                     Rect r = GUILayoutUtility.GetLastRect();
                     _splitView.OnGUI(new Rect(new Vector2(0, r.yMax),
                           new Vector2(position.width, position.height - r.height)));
@@ -499,8 +489,7 @@ namespace MultyFramework
             }
             Repaint();
         }
-        private Texture2D _tx;
-        private Material _mat;
+
         void OnDestroy()
         {
             DestroyImmediate(_webView);

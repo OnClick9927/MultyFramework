@@ -9,6 +9,11 @@ namespace MultyFramework
 {
     class MultyFrameworkEditorTool
     {
+        [MenuItem("MultyFramework/Clear Memory")]
+        static void ClearMemory()
+        {
+            Directory.Delete(rootPath, true);
+        }
         internal const string baidu = "https://www.baidu.com/";
         internal const string frameworkUrl = "https://upkg.org";
         internal const string version="0.0.0.1";
@@ -20,7 +25,7 @@ namespace MultyFramework
         {
             get
             {
-                string path = Path.Combine(EditorApplication.applicationContentsPath, framewokName);
+                string path = Path.Combine(Application.persistentDataPath+"/../",framewokName+"Memory");
                 if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path);

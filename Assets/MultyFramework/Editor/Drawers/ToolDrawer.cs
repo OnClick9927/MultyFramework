@@ -81,7 +81,15 @@ namespace MultyFramework
                 ToolGUI();
                 GUILayout.EndScrollView();
             }
-            GUILayout.EndArea();
+            try
+            {
+                GUILayout.EndArea();
+            }
+            catch (System.Exception)
+            {
+
+               
+            }
         }
 
         /// <summary>
