@@ -295,6 +295,7 @@ namespace MultyFramework
             switch (value)
             {
                 case WindowSelectType.ReadMe:
+                    webview.LoadURL(_url);
                     break;
                 case WindowSelectType.InProject:
                     break;
@@ -362,24 +363,24 @@ namespace MultyFramework
     {
 
 
-        private WebViewHook _webView;
+        public WebViewHook webview;
         private string _url;
         private void ReadMe(Rect rect)
         {
             // hook to this window
-            if (_webView.Hook(this))
+            if (webview.Hook(this))
                 // do the first thing to do
-                _webView.LoadURL(_url);
+                webview.LoadURL(_url);
 
             // Navigation
             if (GUI.Button(new Rect(rect.x, rect.y, 25, 20), "<"))
-                _webView.Back();
+                webview.Back();
             if (GUI.Button(new Rect(rect.x + 25, rect.y, 25, 20), ">"))
-                _webView.Forward();
+                webview.Forward();
             if (GUI.Button(new Rect(rect.x + 50, rect.y, 25, 20), new GUIContent(EditorGUIUtility.IconContent("refresh"))))
-                _webView.Reload();
+                webview.Reload();
             if (GUI.Button(new Rect(rect.x + 75, rect.y, 25, 20), "→"))
-                _webView.LoadURL(_url);
+                webview.LoadURL(_url);
             _url = GUI.TextField(new Rect(rect.x + 100, rect.y, rect.width - 100, 20), _url);
 
             // URL text field
@@ -390,9 +391,9 @@ namespace MultyFramework
             if (ev.isKey && GUI.GetNameOfFocusedControl().Equals("urlfield"))
                 if (ev.keyCode == KeyCode.Return)
                 {
-                    _webView.LoadURL(_url);
+                    webview.LoadURL(_url);
                     GUIUtility.keyboardControl = 0;
-                    _webView.SetApplicationFocus(true);
+                    webview.SetApplicationFocus(true);
                     ev.Use();
                 }
             //  else if (ev.keyCode == KeyCode.A && (ev.control | ev.command))
@@ -401,14 +402,14 @@ namespace MultyFramework
             if (Event.current.type == EventType.Repaint)
             {
                 // keep the browser aware with resize
-                _webView.OnGUI(rect.Zoom(AnchorType.LowerCenter, new Vector2(0, -20)));
+                webview.OnGUI(rect.Zoom(AnchorType.LowerCenter, new Vector2(0, -20)));
             }
         }
         public void HideWebView()
         {
-            if (_webView)
+            if (webview)
             {
-                _webView.Detach();
+                webview.Detach();
             }
         }
 
@@ -418,12 +419,9 @@ namespace MultyFramework
         private void OnEnable()
         {
             PanelGUIDrawer.window = this;
-
-
-
-            if (!_webView)
+            if (!webview)
             {
-                _webView = CreateInstance<WebViewHook>();
+                webview = CreateInstance<WebViewHook>();
             }
             if (_splitView == null)
             {
@@ -492,7 +490,7 @@ namespace MultyFramework
 
         void OnDestroy()
         {
-            DestroyImmediate(_webView);
+            DestroyImmediate(webview);
         }
     }
 }

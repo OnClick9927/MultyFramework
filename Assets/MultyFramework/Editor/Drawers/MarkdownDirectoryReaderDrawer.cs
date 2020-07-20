@@ -97,8 +97,29 @@ namespace MultyFramework
         }
         private string[] _paths;
         private string[] _names;
-        private int _index;
+        private int __index;
+        private int _index
+        {
+            get { return __index; }
+            set
+            {
+                if (__index != value)
+                {
+                    __index = value;
+                    _editorTxt = File.ReadAllText(_paths[_index]);
+                    _webView.LoadHTML(FinalTxt());
+                }
+            }
+        }
         private float width;
+        public override void OnEnable()
+        {
+            if (_paths != null && _paths.Length != 0)
+            {
+                __index = -1;
+                _index = 0;
+            }
+        }
         protected override void ToolGUI()
         {
             GUILayout.BeginHorizontal(Styles.toolbar);
@@ -118,13 +139,7 @@ namespace MultyFramework
             GUILayout.FlexibleSpace();
             if (_paths != null && _paths.Length != 0)
             {
-                var tmp = EditorGUILayout.Popup(_index, _names, Styles.ToolbarDropDown);
-                if (tmp != _index)
-                {
-                    _index = tmp;
-                    _editorTxt = File.ReadAllText(_paths[_index]);
-                    _webView.LoadHTML(FinalTxt());
-                }
+                _index = EditorGUILayout.Popup(_index, _names, Styles.ToolbarDropDown);
             }
             GUILayout.EndHorizontal();
 

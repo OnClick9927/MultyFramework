@@ -9,19 +9,14 @@ namespace MultyFramework
         protected abstract Dictionary<string, string> urlMap { get; }
         private string[] _names;
         private string[] _urls;
-        private WebViewHook _webView;
+        private WebViewHook _webView { get { return window.webview; } }
         private int __index;
 
         public override void Awake()
         {
-            if (!_webView)
-            {
-                _webView = ScriptableObject.CreateInstance<WebViewHook>();
-            }
             _names = urlMap.Keys.ToArray();
             _urls = urlMap.Values.ToArray();
-            __index = -1;
-            _index = 0;
+          
         }
         public override void OnDestroy()
         {
@@ -45,6 +40,11 @@ namespace MultyFramework
                     _webView.LoadURL(_urls[value]);
                 }
             }
+        }
+        public override void OnEnable()
+        {
+            __index = -1;
+            _index = 0;
         }
 
         private void ReadMe(Rect rect)

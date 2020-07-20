@@ -84,7 +84,7 @@ namespace MultyFramework
 
             public int code;
             public string msg;
-            public string err;
+            //public string err;
 
             public static T Dispose<T>(string url, string text) where T : ResponseModel
             {
@@ -188,85 +188,141 @@ namespace MultyFramework
         }
         public class HttpPkg
         {
-            private static void GetRequest(string url, Dictionary<string, object> forms, Action<UnityWebRequest> callback, bool addToken = false)
+            private abstract class Request
             {
-                string newUrl = url;
-                if (forms != null && forms.Count > 0)
+                public readonly string url;
+                private readonly Action<UnityWebRequest> _callback;
+                protected readonly bool addToken;
+                protected UnityWebRequest request;
+                public float progress { get { return request.downloadProgress; } }
+                public bool isDone { get { return request.isDone; } }
+                protected Request(string url, Action<UnityWebRequest> callback, bool addToken = false)
                 {
-                    newUrl += "?";
-                    foreach (var item in forms)
-                    {
-                        newUrl += string.Format("{0}={1}", item.Key, item.Value) + "&";
-                    }
-                    newUrl = newUrl.Substring(0, newUrl.Length - 1);
+                    this.url = url;
+                    this._callback = callback;
+                    this.addToken = addToken;
                 }
-                var req = UnityWebRequest.Get(newUrl);
-                if (addToken)
+                public void Start()
                 {
-                    if (string.IsNullOrEmpty(_token))
+                    request.SendWebRequest();
+                }
+                public void Compelete()
+                {
+                    ClearProgressBar();
+                    if (!string.IsNullOrEmpty(request.error))
                     {
-                        ShowNotification("token is Null , Please Login First");
+                        ShowNotification(request.error);
                         return;
                     }
-                    req.SetRequestHeader("token", _token);
+                    if (_callback != null)
+                    {
+                        _callback.Invoke(request);
+                    }
+                    request.Abort();
                 }
-
-                //  req.SetRequestHeader("device_info", JsonUtility.ToJson(GetDeviceInfo()));
-                req.SendWebRequest();
-                while (!req.isDone)
+            }
+            private class Request_Get:Request
+            {
+                public Request_Get(string url, Action<UnityWebRequest> callback, Dictionary<string, object> forms, bool addToken = false) : base(url, callback, addToken)
                 {
-                    DisplayProgressBar("Post Request", "", req.downloadProgress);
+                    string newUrl = url;
+                    if (forms != null && forms.Count > 0)
+                    {
+                        newUrl += "?";
+                        foreach (var item in forms)
+                        {
+                            newUrl += string.Format("{0}={1}", item.Key, item.Value) + "&";
+                        }
+                        newUrl = newUrl.Substring(0, newUrl.Length - 1);
+                    }
+                     request = UnityWebRequest.Get(newUrl);
+                    if (addToken)
+                    {
+                        if (string.IsNullOrEmpty(_token))
+                        {
+                            ShowNotification("token is Null , Please Login First");
+                            return;
+                        }
+                        request.SetRequestHeader("token", _token);
+                    }
                 }
-                ClearProgressBar();
-                if (!string.IsNullOrEmpty(req.error))
+            }
+            private class Request_Post : Request
+            {
+                public Request_Post(string url, Action<UnityWebRequest> callback, WWWForm forms, bool addToken = false) : base(url, callback, addToken)
                 {
-                    DisplayDialog("Err", string.Format("GetRequest url:{0}, error:{1}", req.url, req.error));
-                    return;
+                    if (forms == null)
+                    {
+                        forms = new WWWForm();
+                    }
+                    request = UnityWebRequest.Post(url, forms);
+                    if (addToken)
+                    {
+                        if (string.IsNullOrEmpty(_token))
+                        {
+                            ShowNotification("token is Null , Please Login First");
+                            return;
+                        }
+                        request.SetRequestHeader("token", _token);
+                    }
                 }
-                if (callback != null)
-                {
-                    callback.Invoke(req);
-                }
-                req.Abort();
             }
 
+            private const int maxRequest = 5;
+            private static Queue<Request> _waitRequests;
+            private static List<Request> _requests;
+
+            private static void Update()
+            {
+                if (_waitRequests.Count <= 0  && _requests.Count <= 0) return;
+                while (_requests.Count< maxRequest)
+                {
+                    if (_waitRequests.Count > 0)
+                    {
+                        var _req = _waitRequests.Dequeue();
+                        _req.Start();
+                        _requests.Add(_req);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                for (int i = _requests.Count-1; i >=0 ; i--)
+                {
+                    var _req = _requests[i];
+                    if (_req.isDone)
+                    {
+                        _req.Compelete();
+                        _requests.Remove(_req);
+                    }
+                    else
+                    {
+                        DisplayProgressBar("Post Request", _req.url, _req.progress);
+                    }
+                }
+
+            }
+            private static void Run(Request request)
+            {
+                if (_waitRequests==null)
+                {
+                    _waitRequests = new Queue<Request>();
+                    _requests = new List<Request>();
+                    EditorApplication.update += Update;
+                }
+                _waitRequests.Enqueue(request);
+            }
+
+
+
+            private static void GetRequest(string url, Dictionary<string, object> forms, Action<UnityWebRequest> callback, bool addToken = false)
+            {
+                Run(new Request_Get(url, callback, forms, addToken));
+            }
             private static void PostRequest(string url, WWWForm forms, Action<UnityWebRequest> callback, bool addToken = false)
             {
-                if (forms == null)
-                {
-                    forms = new WWWForm();
-                }
-
-                var req = UnityWebRequest.Post(url, forms);
-                if (addToken)
-                {
-                    if (string.IsNullOrEmpty(_token))
-                    {
-                        ShowNotification("token is Null , Please Login First");
-                        return;
-                    }
-                    req.SetRequestHeader("token", _token);
-                }
-
-
-                //  req.SetRequestHeader("device_info", JsonUtility.ToJson(GetDeviceInfo()));
-                req.SendWebRequest();
-                while (!req.isDone)
-                {
-                    DisplayProgressBar("Post Request", url, req.downloadProgress);
-                }
-                ClearProgressBar();
-
-                if (!string.IsNullOrEmpty(req.error))
-                {
-                    DisplayDialog("Err", string.Format("GetRequest url:{0}, error:{1}", req.url, req.error));
-                    return;
-                }
-                if (callback != null)
-                {
-                    callback.Invoke(req);
-                }
-                req.Abort();
+                Run(new Request_Post(url, callback, forms, addToken));
             }
 
             private static void GetRequest<T>(string url, Dictionary<string, object> forms, Action<T> callback, bool addToken = false) where T : ResponseModel
@@ -286,7 +342,6 @@ namespace MultyFramework
                     }
                 }, addToken);
             }
-
             private static void PostRequest<T>(string url, WWWForm forms, Action<T> callback, bool addToken = false) where T : ResponseModel
             {
                 PostRequest(url, forms, (req) =>
@@ -575,12 +630,12 @@ namespace MultyFramework
             HttpPkg.GetPkgInfoList((m) => {
                 var names = m.data;
                 for (int i = 0; i < names.Count; i++)
-                {
+                { 
                     HttpPkg.GetPkgInfos(names[i],
                         (model) => {
                             WebCollectionInfo info = new WebCollectionInfo()
                             {
-                                name = names[i],
+                                name = model.data[0].pkg_name,
                                 author = model.data[0].author,
                             };
                             WebCollectionInfo.Version[] versions = new WebCollectionInfo.Version[model.data.Count];
@@ -598,7 +653,7 @@ namespace MultyFramework
                             }
                             info.versions = versions;
                             window.multyDrawersInfo.infos.Add(info);
-                            if (i == names.Count - 1)
+                            if (window.multyDrawersInfo.infos.Count == names.Count)
                             {
                                 if (!string.IsNullOrEmpty(window.multyDrawersInfo.userJson.name))
                                 {
@@ -616,6 +671,7 @@ namespace MultyFramework
                 }
             });
         }
+       
 
 
         protected static void ClearUserJson()
@@ -641,9 +697,9 @@ namespace MultyFramework
                 FreshWebCollection();
             });
         }
-        private static void WriteUserJson(string email, string token, string name)
+        private static void WriteUserJson(string email, string token, string name,bool login=true)
         {
-            window.multyDrawersInfo.login = true;
+            window.multyDrawersInfo.login = login;
             window.multyDrawersInfo.userJson = new MultyFrameworkDrawersInfo.UserJson()
             {
                 email = email,
@@ -659,9 +715,9 @@ namespace MultyFramework
             HttpPkg.Signup(name, email, password, (model) =>
             {
 
-                WriteUserJson(email, model.data.token, name);
+                WriteUserJson(email, model.data.token, name,false);
                 ShowNotification("Success");
-                LoginWithToken();
+               // LoginWithToken();
             });
 
         }
@@ -674,11 +730,8 @@ namespace MultyFramework
             , (model) =>
             {
                 window.multyDrawersInfo.login = true;
-            });
-            if (window.multyDrawersInfo.login)
-            {
                 FreshWebCollection();
-            }
+            });
         }
 
 

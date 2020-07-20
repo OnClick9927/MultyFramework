@@ -9,7 +9,7 @@ namespace MultyFramework
         private const string _blackPath = "Assets/MultyFramework/Editor/Res/black.html";
         private const string _whitePath = "Assets/MultyFramework/Editor/Res/white.html";
 
-        protected static WebViewHook _webView;
+        protected static WebViewHook _webView { get { return window.webview; } }
         private static string __white;
         private static string __black;
 
@@ -36,13 +36,7 @@ namespace MultyFramework
             }
         }
         protected string _editorTxt;
-        public override void Awake()
-        {
-            if (!_webView)
-            {
-                _webView = ScriptableObject.CreateInstance<WebViewHook>();
-            }
-        }
+
         public override void OnDestroy()
         {
             GameObject.DestroyImmediate(_webView);

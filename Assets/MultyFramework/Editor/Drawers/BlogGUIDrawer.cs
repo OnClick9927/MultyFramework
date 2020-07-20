@@ -8,10 +8,10 @@ namespace MultyFramework
         public override string helpurl { get { return blogUrl; } }
 
         protected abstract string blogUrl { get; }
-        private WebViewHook _webView;
-        public override void Awake()
+        private WebViewHook _webView { get { return window.webview; } }
+        public override void OnEnable()
         {
-
+            _webView.LoadURL(helpurl);
         }
         public override void OnDestroy()
         {
@@ -53,13 +53,7 @@ namespace MultyFramework
                 _webView.OnGUI(rect.Zoom(AnchorType.LowerCenter, new Vector2(0, -20)));
             }
         }
-        public override void OnEnable()
-        {
-            if (!_webView)
-            {
-                _webView = ScriptableObject.CreateInstance<WebViewHook>();
-            }
-        }
+
         protected override void ToolGUI()
         {
             var rect = GUILayoutUtility.GetLastRect();

@@ -34,6 +34,10 @@ namespace MultyFramework
                 }
             }
         }
+        public override void OnEnable()
+        {
+            _webView.LoadHTML(FinalTxt());
+        }
         private string FinalTxt()
         {
             string content = UnityEngine.Networking.UnityWebRequest.EscapeURL("", Encoding.UTF8)
@@ -66,7 +70,7 @@ namespace MultyFramework
                     return "";
             }
             
-            byte[] b = System.Text.Encoding.Default.GetBytes(content);   
+            byte[] b = Encoding.Default.GetBytes(content);   
             //转成 Base64 形式的 System.String
             content = Convert.ToBase64String(b);
             return content;

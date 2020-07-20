@@ -88,10 +88,16 @@ namespace MultyFramework
             base.Awake();
             _paths = mardownMap.Values.ToArray();
             _names = mardownMap.Keys.ToArray();
-            __index = -1;
-            _index = 0;
+           
         }
-
+        public override void OnEnable()
+        {
+            if (_paths != null && _paths.Length != 0)
+            {
+                __index = -1;
+                _index = 0;
+            }
+        }
 
         protected override void ToolGUI()
         {
