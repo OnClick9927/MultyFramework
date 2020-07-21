@@ -37,16 +37,9 @@ namespace MultyFramework
         }
         protected string _editorTxt;
 
-        public override void OnDestroy()
-        {
-            GameObject.DestroyImmediate(_webView);
-        }
         public override void OnDisable()
         {
-            if (_webView)
-            {
-                _webView.Detach();
-            }
+            window.HideWebView();
         }
     }
 }

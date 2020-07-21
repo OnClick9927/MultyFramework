@@ -21,7 +21,7 @@ namespace MultyFramework
             public static GUIStyle searchCancelButtonEmpty = "ToolbarSeachCancelButtonEmpty";
             public static GUIStyle foldout = "Foldout";
             public static GUIStyle toolbar = new GUIStyle("Toolbar") { fixedHeight = toolbarHeight };
-            public static GUIStyle ToolbarDropDown = "ToolbarDropDown";
+            public static GUIStyle toolbarDropDown = "ToolbarDropDown";
             public static GUIStyle selectionRect = "SelectionRect";
 
         }
@@ -35,10 +35,10 @@ namespace MultyFramework
         }
         private enum WindowSelectType
         {
-            ReadMe,
-            InProject,
             Tools,
             WebCollection,
+            InProject,
+            ReadMe,
         }
         [Serializable]
         public class SplitView
@@ -133,6 +133,8 @@ namespace MultyFramework
             var window = GetWindow<MultyFrameworkWindow>();
             PanelGUIDrawer.window = window;
             window._url = MultyFrameworkEditorTool.frameworkUrl;
+            window.webview = CreateInstance<WebViewHook>();
+            if (window.webview.Hook(window))
             window.titleContent = new GUIContent("MultyFramework");
             MultyFrameworkDrawer.Init();
         }
@@ -288,21 +290,15 @@ namespace MultyFramework
         private void OnSelectWindowTypeChange(WindowSelectType value)
         {
             _selectDrawer = null;
-            if (value != WindowSelectType.ReadMe)
-            {
-                HideWebView();
-            }
             switch (value)
             {
                 case WindowSelectType.ReadMe:
                     webview.LoadURL(_url);
                     break;
                 case WindowSelectType.InProject:
-                    break;
                 case WindowSelectType.Tools:
-                    break;
                 case WindowSelectType.WebCollection:
-                    //  _collection = GetCollection();
+                    HideWebView();
                     break;
                 default:
                     break;
@@ -367,42 +363,18 @@ namespace MultyFramework
         private string _url;
         private void ReadMe(Rect rect)
         {
-            // hook to this window
-            if (webview.Hook(this))
-                // do the first thing to do
-                webview.LoadURL(_url);
-
-            // Navigation
             if (GUI.Button(new Rect(rect.x, rect.y, 25, 20), "<"))
                 webview.Back();
             if (GUI.Button(new Rect(rect.x + 25, rect.y, 25, 20), ">"))
                 webview.Forward();
-            if (GUI.Button(new Rect(rect.x + 50, rect.y, 25, 20), new GUIContent(EditorGUIUtility.IconContent("refresh"))))
+            if (GUI.Button(new Rect(rect.x + 50, rect.y, 25, 20), EditorGUIUtility.IconContent("refresh")))
                 webview.Reload();
             if (GUI.Button(new Rect(rect.x + 75, rect.y, 25, 20), "→"))
                 webview.LoadURL(_url);
             _url = GUI.TextField(new Rect(rect.x + 100, rect.y, rect.width - 100, 20), _url);
-
-            // URL text field
-            GUI.SetNextControlName("urlfield");
-            var ev = Event.current;
-
-            // Focus on web view if return is pressed in URL field
-            if (ev.isKey && GUI.GetNameOfFocusedControl().Equals("urlfield"))
-                if (ev.keyCode == KeyCode.Return)
-                {
-                    webview.LoadURL(_url);
-                    GUIUtility.keyboardControl = 0;
-                    webview.SetApplicationFocus(true);
-                    ev.Use();
-                }
-            //  else if (ev.keyCode == KeyCode.A && (ev.control | ev.command))
-
-
             if (Event.current.type == EventType.Repaint)
             {
-                // keep the browser aware with resize
-                webview.OnGUI(rect.Zoom(AnchorType.LowerCenter, new Vector2(0, -20)));
+                webview.OnGUI(rect.Zoom(AnchorType.LowerCenter, new Vector2(0, -20))); 
             }
         }
         public void HideWebView()
@@ -419,10 +391,6 @@ namespace MultyFramework
         private void OnEnable()
         {
             PanelGUIDrawer.window = this;
-            if (!webview)
-            {
-                webview = CreateInstance<WebViewHook>();
-            }
             if (_splitView == null)
             {
                 _splitView = new SplitView();
@@ -432,13 +400,8 @@ namespace MultyFramework
             var types = GetTypes();
             _tools = GetMultyFrameworkTools(types).Concat(GetTools(types)).ToList();
             _tools.ForEach((f) => { f.Awake(); });
-
             multyDrawersInfo.FreshDrawers();
         }
-
-
-
-
 
         private void OnDisable()
         {
@@ -449,7 +412,7 @@ namespace MultyFramework
         {
             {
                 GUILayout.BeginHorizontal(Styles.toolbar, GUILayout.Width(position.width));
-                _windowSelectType = (WindowSelectType)EditorGUILayout.EnumPopup(_windowSelectType, Styles.ToolbarDropDown);
+                _windowSelectType = (WindowSelectType)EditorGUILayout.EnumPopup(_windowSelectType, Styles.toolbarDropDown);
                 GUILayout.FlexibleSpace();
 
                 if (_windowSelectType != WindowSelectType.ReadMe)
@@ -485,7 +448,7 @@ namespace MultyFramework
                           new Vector2(position.width, position.height - r.height)));
                 }
             }
-            Repaint();
+            //Repaint();
         }
 
         void OnDestroy()

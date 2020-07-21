@@ -7,6 +7,26 @@ namespace MultyFramework
 {
     public class MarkdownWriterDrawer : MarkdownGUIDrawer
     {
+        [System.Serializable]
+        public class A
+        {
+            public int code;
+            public B[] data;
+            public string msg;
+            [System.Serializable]
+            public class B
+            {
+               // public string name;
+                public string version;
+            }
+        }
+        [MenuItem("777/666")]
+        public static void GG()
+        {
+            string str = "{\"code\":200,\"data\":{\"upkg\":\"1.0.0\",\"upkg1\":\"1.0.8\",\"upkg2\":\"1.0.7\",\"upkg3\":\"1.0.10\"},\"msg\":\"succend\"}";
+          var a=  JsonUtility.FromJson<A>(str);
+            Debug.Log(a);
+        }
         private enum ShowType
         {
             EditorWithBlackPreview,
@@ -79,20 +99,11 @@ namespace MultyFramework
         private void ReadMe(Rect rect)
         {
 
-            if (_webView.Hook(window))
-            {
-                _webView.LoadHTML(FinalTxt());
-            }
-            GUI.SetNextControlName("urlfield");
-            var ev = Event.current;
-            if (ev.isKey && GUI.GetNameOfFocusedControl().Equals("urlfield"))
-                if (ev.keyCode == KeyCode.Return)
-                {
-                    _webView.LoadURL(helpurl);
-                    GUIUtility.keyboardControl = 0;
-                    _webView.SetApplicationFocus(true);
-                    ev.Use();
-                }
+            //if (_webView.Hook(window))
+            //{
+            //    _webView.LoadHTML(FinalTxt());
+            //}
+
             if (Event.current.type == EventType.Repaint)
             {
                 _webView.OnGUI(rect);
@@ -102,7 +113,11 @@ namespace MultyFramework
         protected override void ToolGUI()
         {
             GUILayout.BeginHorizontal(Styles.toolbar);
-            _showType=(ShowType) EditorGUILayout.EnumPopup("", _showType,Styles.ToolbarDropDown);
+            _showType=(ShowType) EditorGUILayout.EnumPopup("", _showType,Styles.toolbarDropDown);
+            if (GUILayout.Button(Contents.refresh, Styles.toolBarBtn))
+            {
+                _webView.LoadHTML(FinalTxt());
+            }
             if (GUILayout.Button("Save",Styles.toolBarBtn))
             {
                 var path=  EditorUtility.SaveFilePanel("Save md To disk", "Assets", "NewMarkDown.md", "md");
@@ -122,10 +137,7 @@ namespace MultyFramework
                     _webView.LoadHTML(FinalTxt());
                 }
             }
-            if (GUILayout.Button(new GUIContent(EditorGUIUtility.IconContent("refresh")), Styles.toolBarBtn))
-            {
-                _webView.LoadHTML(FinalTxt());
-            }
+            autoRefresh= GUILayout.Toggle(autoRefresh, "Auto Refresh",Styles.toolBarBtn);
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
 
@@ -149,10 +161,7 @@ namespace MultyFramework
                     ReadMe(r);
                     break;
                 case ShowType.JustEditor:
-                    if (_webView)
-                    {
-                        _webView.Detach();
-                    }
+                    window.HideWebView();
                     EditorTxt(r, ref _editorTxt);
                     break;
                 case ShowType.EditorWithWhitePreview:
@@ -173,6 +182,8 @@ namespace MultyFramework
         }
 
         private Vector2 _scroll;
+        private bool autoRefresh;
+        
         private void EditorTxt(Rect rect,ref string str)
         {
             var ev = Event.current;
@@ -180,8 +191,9 @@ namespace MultyFramework
            _scroll= GUILayout.BeginScrollView(_scroll, GUILayout.Width(rect.width), GUILayout.MaxHeight(rect.height));
             str = GUILayout.TextArea(tmp, GUILayout.Width(rect.width), GUILayout.MaxHeight(rect.height));
             GUILayout.EndScrollView();
-            if (tmp != str)
+            if (tmp != str && autoRefresh)
             {
+
                 _webView.LoadHTML(FinalTxt());
             }
         }

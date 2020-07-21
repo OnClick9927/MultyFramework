@@ -18,16 +18,10 @@ namespace MultyFramework
             _urls = urlMap.Values.ToArray();
           
         }
-        public override void OnDestroy()
-        {
-            GameObject.DestroyImmediate(_webView);
-        }
+
         public override void OnDisable()
         {
-            if (_webView)
-            {
-                _webView.Detach();
-            }
+            window.HideWebView();
         }
         private int _index
         {
@@ -49,18 +43,9 @@ namespace MultyFramework
 
         private void ReadMe(Rect rect)
         {
-            if (_webView.Hook(window))
-                _webView.LoadURL(_urls[_index]);
-            GUI.SetNextControlName("urlfield");
-            var ev = Event.current;
-            if (ev.isKey && GUI.GetNameOfFocusedControl().Equals("urlfield"))
-                if (ev.keyCode == KeyCode.Return)
-                {
-                    _webView.LoadURL(helpurl);
-                    GUIUtility.keyboardControl = 0;
-                    _webView.SetApplicationFocus(true);
-                    ev.Use();
-                }
+            //if (_webView.Hook(window))
+            //    _webView.LoadURL(_urls[_index]);
+
             if (Event.current.type == EventType.Repaint)
             {
                 _webView.OnGUI(rect);
@@ -70,12 +55,12 @@ namespace MultyFramework
         protected override void ToolGUI()
         {
             GUILayout.BeginHorizontal(Styles.toolbar);
-            _index = EditorGUILayout.Popup(_index, _names, Styles.ToolbarDropDown);
+            _index = EditorGUILayout.Popup(_index, _names, Styles.toolbarDropDown);
             if (GUILayout.Button("<", Styles.toolBarBtn))
                 _webView.Back();
             if (GUILayout.Button(">", Styles.toolBarBtn))
                 _webView.Forward();
-            if (GUILayout.Button(EditorGUIUtility.IconContent("refresh"), Styles.toolBarBtn))
+            if (GUILayout.Button(Contents.refresh, Styles.toolBarBtn))
                 _webView.Reload();
             if (GUILayout.Button(Contents.help, Styles.boldLabel))
                 Help.BrowseURL(_urls[_index]);

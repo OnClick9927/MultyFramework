@@ -123,7 +123,7 @@ namespace MultyFramework
         protected override void ToolGUI()
         {
             GUILayout.BeginHorizontal(Styles.toolbar);
-            if (GUILayout.Button(new GUIContent(EditorGUIUtility.IconContent("refresh")), Styles.toolBarBtn))
+            if (GUILayout.Button(Contents.refresh, Styles.toolBarBtn))
             {
                 _webView.LoadHTML(FinalTxt());
             }
@@ -135,11 +135,11 @@ namespace MultyFramework
                     _dir = path;
                 }
             }
-            _showType = (ShowType)EditorGUILayout.EnumPopup("", _showType, Styles.ToolbarDropDown, GUILayout.Width(Contents.gap * 5));
+            _showType = (ShowType)EditorGUILayout.EnumPopup("", _showType, Styles.toolbarDropDown, GUILayout.Width(Contents.gap * 5));
             GUILayout.FlexibleSpace();
             if (_paths != null && _paths.Length != 0)
             {
-                _index = EditorGUILayout.Popup(_index, _names, Styles.ToolbarDropDown);
+                _index = EditorGUILayout.Popup(_index, _names, Styles.toolbarDropDown);
             }
             GUILayout.EndHorizontal();
 
@@ -164,20 +164,11 @@ namespace MultyFramework
         }
         private void ReadMe(Rect rect)
         {
-            if (_webView.Hook(window))
-            {
-                _webView.LoadHTML(FinalTxt());
-            }
-            GUI.SetNextControlName("urlfield");
-            var ev = Event.current;
-            if (ev.isKey && GUI.GetNameOfFocusedControl().Equals("urlfield"))
-                if (ev.keyCode == KeyCode.Return)
-                {
-                    _webView.LoadURL(helpurl);
-                    GUIUtility.keyboardControl = 0;
-                    _webView.SetApplicationFocus(true);
-                    ev.Use();
-                }
+            //if (_webView.Hook(window))
+            //{
+            //    _webView.LoadHTML(FinalTxt());
+            //}
+ 
             if (Event.current.type == EventType.Repaint)
             {
                 _webView.OnGUI(rect);

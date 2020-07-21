@@ -18,16 +18,16 @@
 
 </head>
 <body class="bg-dark text-light">
-<script>hljs.initHighlightingOnLoad();</script>
-<div class="container mt-3">
-    <div id="content" class="mt-3 mb-3">
+    <script>hljs.initHighlightingOnLoad();</script>
+    <div class="container mt-3">
+        <div id="content" class="mt-3 mb-3">
+        </div>
     </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script>
-    document.getElementById('content').innerHTML =
-        marked(decodeURIComponent('#MDSTRING#'));
-</script>
-<script src="http://prismjs.com/prism.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        document.getElementById('content').innerHTML =
+            marked(decodeURIComponent('#MDSTRING#'));
+    </script>
+    <script src="http://prismjs.com/prism.js"></script>
 </body>
 </html>

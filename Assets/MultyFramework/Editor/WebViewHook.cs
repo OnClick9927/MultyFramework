@@ -193,7 +193,7 @@ namespace MultyFramework
             Invoke(_DefineScriptObject, path, obj);
         }
 
-        protected void SetDelegateObject(ScriptableObject obj)
+        public void SetDelegateObject(ScriptableObject obj)
         {
             // Only set into this object
             Invoke(_SetDelegateObject, obj);

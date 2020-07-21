@@ -10,7 +10,8 @@ namespace MultyFramework
     {
         protected class Styles
         {
-            public static GUIStyle ToolbarDropDown = "ToolbarDropDown";
+            public static GUIStyle tooltip = "tooltip";
+            public static GUIStyle toolbarDropDown = "ToolbarDropDown";
             public static GUIStyle toolbar = new GUIStyle("Toolbar") { fixedHeight = 20 };
             public static GUIStyle toolBarBtn = "toolbarbutton";
             public static GUIStyle header = new GUIStyle("BoldLabel") {
