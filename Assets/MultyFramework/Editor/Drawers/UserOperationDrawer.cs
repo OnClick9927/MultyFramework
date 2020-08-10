@@ -33,7 +33,7 @@ namespace MultyFramework
         private LoginInfo _loginInfo;
         private RegisterInfo _registerInfo;
         private UploadInfo _uploadInfo;
-
+        private ForgetPasswordInfo _forgetPsdInfo;
 
 
         protected override void ToolGUI()
@@ -49,6 +49,9 @@ namespace MultyFramework
                     LoginGUI();
                     break;
                 case UserOperation.ForgetPassword:
+                    GUI.enabled = !_login;
+                    ForGetPasswordGUI();
+                    GUI.enabled = true;
                     break;
                 case UserOperation.Upload:
                     GUI.enabled = _login;
@@ -60,6 +63,7 @@ namespace MultyFramework
             }
             GUILayout.Space(Contents.gap );
         }
+
 
         private void LoginGUI()
         {
@@ -232,6 +236,30 @@ namespace MultyFramework
 
             }
         }
+        private void ForGetPasswordGUI()
+        {
+            _forgetPsdInfo.email=EditorGUILayout.TextField("Email", _forgetPsdInfo.email);
+            {
+                GUILayout.BeginHorizontal();
+                _forgetPsdInfo.code= EditorGUILayout.TextField("Code", _forgetPsdInfo.code);
+                if (GUILayout.Button("Send",GUILayout.Width(Contents.gap*4)))
+                {
+                    ForgetEmailPassword(_forgetPsdInfo.email);
+                }
+                GUILayout.EndHorizontal();
+            }
+
+            _forgetPsdInfo.newPsd = EditorGUILayout.TextField("New Password", _forgetPsdInfo.newPsd);
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.FlexibleSpace();
+                if (GUILayout.Button(Contents.Go))
+                {
+                    ChangeEmailPassword(_forgetPsdInfo.email,_forgetPsdInfo.newPsd, _forgetPsdInfo.code);
+                }
+                GUILayout.EndHorizontal();
+            }
+        }
 
 
         public override void Awake()
@@ -239,6 +267,7 @@ namespace MultyFramework
             _loginInfo = new LoginInfo();
             _registerInfo = new RegisterInfo();
             _uploadInfo = new UploadInfo();
+            _forgetPsdInfo = new ForgetPasswordInfo();
         }
 
       

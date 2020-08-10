@@ -8,32 +8,38 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
 
-#pragma  warning disable 0414
-#pragma  warning disable 0649
+#pragma warning disable 0414
+#pragma warning disable 0649
 namespace MultyFramework
 {
     public abstract class MultyFrameworkDrawer : PanelGUIDrawer
     {
         public static class PkgConstant
         {
-            public const string HOST = "https://upkg.org/api/";
-            // public const string HOST = "https://pkg.tdouguo.com/api/";
-            // public const string HOST = "http://127.0.0.1:5000/api/";
+            // public const string HOST = "https://upkg.org/api/";
+            public const string HOST = "https://test-api.upkg.org/v1/";
+            // public const string HOST = "https://api.upkg.org/v1/";
 
             // user
             public const string API_LOGIN = HOST + "login";
             public const string API_SIGNUP = HOST + "signup";
 
+            public const string API_VERIFY_TOKEN = HOST + "verify_token";
+            public const string API_CHANGE_PASSWORD = HOST + "change_password";
+            public const string API_FORGE_PASSWORD_REQUEST = HOST + "forge_password_request";
+            public const string API_FORGE_PASSWORD = HOST + "forge_password";
+
             // pkg
             public const string API_UPLOAD_PKG = HOST + "upload_pkg";
+            public const string API_UPDATE_PKG = HOST + "update_pkg";
             public const string API_DELETE_PKG = HOST + "delete_pkg";
             public const string API_PKG_INFO = HOST + "pkg_info";
             public const string API_PKG_INFOS = HOST + "pkg_infos";
             public const string API_DOWNLOAD_PKG = HOST + "download_pkg";
             public const string API_PKG_INFO_LIST = HOST + "pkg_info_list";
 
-            public static string PKG_PERMISSIONS_PRIVATE = ((int)PkgPermissions.PRIVATE).ToString();
-            public static string PKG_PERMISSIONS_PUBLIC = ((int)PkgPermissions.PUBLIC).ToString();
+            public static string PKG_PERMISSIONS_PRIVATE = ((int) PkgPermissions.PRIVATE).ToString();
+            public static string PKG_PERMISSIONS_PUBLIC = ((int) PkgPermissions.PUBLIC).ToString();
         }
 
         public enum Code
@@ -83,6 +89,7 @@ namespace MultyFramework
             private string text; // 响应文本
 
             public int code;
+
             public string msg;
             //public string err;
 
@@ -95,6 +102,7 @@ namespace MultyFramework
                 responseModel.url = url;
                 return responseModel;
             }
+
             /// <summary>
             /// 
             /// </summary>
@@ -104,7 +112,7 @@ namespace MultyFramework
             {
                 switch (code)
                 {
-                    case (int)Code.OK:
+                    case (int) Code.OK:
                         return true;
                     default:
                         DisplayDialog("Err " + code, this.msg);
@@ -140,7 +148,15 @@ namespace MultyFramework
         [Serializable]
         public class PkgInfoListModel : ResponseModel
         {
-            public List<string> data;
+            public List<Data> data = null;
+
+            [Serializable]
+            public class Data
+            {
+                public string pkg_name;
+                public string last_version;
+                public string last_time;
+            }
         }
 
         [Serializable]
@@ -156,16 +172,18 @@ namespace MultyFramework
         public class PkgInfo
         {
             // todo:不写默认值是因为返回的结构也是使用此结构体 如果有默认值会造成失败时候也有数据了
-            public string pkg_name = "";
-            public string version = "";
-            public string permissions = "";
-            public string dependences = "";
-            public string author = "";
-            public string describtion = "";
-            public string help_url = "";
-            public string pkg_path = "";
-            public string unity_version = "";
-
+            public string pkg_name;
+            public string version;
+            public string permissions;
+            public string dependences;
+            public string author;
+            public string describtion;
+            public string help_url;
+            public string pkg_path;
+            public string unity_version;
+            public string create_time;
+            public string share_url;
+            public string share_pwd;
 
             public List<string> GetDependences()
             {
@@ -186,6 +204,7 @@ namespace MultyFramework
                 dependences = string.Join(",", d.ToArray());
             }
         }
+
         public class HttpPkg
         {
             private abstract class Request
@@ -194,18 +213,29 @@ namespace MultyFramework
                 private readonly Action<UnityWebRequest> _callback;
                 protected readonly bool addToken;
                 protected UnityWebRequest request;
-                public float progress { get { return request.downloadProgress; } }
-                public bool isDone { get { return request.isDone; } }
+
+                public float progress
+                {
+                    get { return request.downloadProgress; }
+                }
+
+                public bool isDone
+                {
+                    get { return request.isDone; }
+                }
+
                 protected Request(string url, Action<UnityWebRequest> callback, bool addToken = false)
                 {
                     this.url = url;
                     this._callback = callback;
                     this.addToken = addToken;
                 }
+
                 public void Start()
                 {
                     request.SendWebRequest();
                 }
+
                 public void Compelete()
                 {
                     ClearProgressBar();
@@ -214,16 +244,20 @@ namespace MultyFramework
                         ShowNotification(request.error);
                         return;
                     }
+
                     if (_callback != null)
                     {
                         _callback.Invoke(request);
                     }
+
                     request.Abort();
                 }
             }
-            private class Request_Get:Request
+
+            private class Request_Get : Request
             {
-                public Request_Get(string url, Action<UnityWebRequest> callback, Dictionary<string, object> forms, bool addToken = false) : base(url, callback, addToken)
+                public Request_Get(string url, Action<UnityWebRequest> callback, Dictionary<string, object> forms,
+                    bool addToken = false) : base(url, callback, addToken)
                 {
                     string newUrl = url;
                     if (forms != null && forms.Count > 0)
@@ -233,9 +267,11 @@ namespace MultyFramework
                         {
                             newUrl += string.Format("{0}={1}", item.Key, item.Value) + "&";
                         }
+
                         newUrl = newUrl.Substring(0, newUrl.Length - 1);
                     }
-                     request = UnityWebRequest.Get(newUrl);
+
+                    request = UnityWebRequest.Get(newUrl);
                     if (addToken)
                     {
                         if (string.IsNullOrEmpty(_token))
@@ -243,18 +279,22 @@ namespace MultyFramework
                             ShowNotification("token is Null , Please Login First");
                             return;
                         }
+
                         request.SetRequestHeader("token", _token);
                     }
                 }
             }
+
             private class Request_Post : Request
             {
-                public Request_Post(string url, Action<UnityWebRequest> callback, WWWForm forms, bool addToken = false) : base(url, callback, addToken)
+                public Request_Post(string url, Action<UnityWebRequest> callback, WWWForm forms, bool addToken = false)
+                    : base(url, callback, addToken)
                 {
                     if (forms == null)
                     {
                         forms = new WWWForm();
                     }
+
                     request = UnityWebRequest.Post(url, forms);
                     if (addToken)
                     {
@@ -263,6 +303,7 @@ namespace MultyFramework
                             ShowNotification("token is Null , Please Login First");
                             return;
                         }
+
                         request.SetRequestHeader("token", _token);
                     }
                 }
@@ -274,8 +315,8 @@ namespace MultyFramework
 
             private static void Update()
             {
-                if (_waitRequests.Count <= 0  && _requests.Count <= 0) return;
-                while (_requests.Count< maxRequest)
+                if (_waitRequests.Count <= 0 && _requests.Count <= 0) return;
+                while (_requests.Count < maxRequest)
                 {
                     if (_waitRequests.Count > 0)
                     {
@@ -288,7 +329,8 @@ namespace MultyFramework
                         break;
                     }
                 }
-                for (int i = _requests.Count-1; i >=0 ; i--)
+
+                for (int i = _requests.Count - 1; i >= 0; i--)
                 {
                     var _req = _requests[i];
                     if (_req.isDone)
@@ -301,31 +343,35 @@ namespace MultyFramework
                         DisplayProgressBar("Post Request", _req.url, _req.progress);
                     }
                 }
-
             }
+
             private static void Run(Request request)
             {
-                if (_waitRequests==null)
+                if (_waitRequests == null)
                 {
                     _waitRequests = new Queue<Request>();
                     _requests = new List<Request>();
                     EditorApplication.update += Update;
                 }
+
                 _waitRequests.Enqueue(request);
             }
 
 
-
-            private static void GetRequest(string url, Dictionary<string, object> forms, Action<UnityWebRequest> callback, bool addToken = false)
+            private static void GetRequest(string url, Dictionary<string, object> forms,
+                Action<UnityWebRequest> callback, bool addToken = false)
             {
                 Run(new Request_Get(url, callback, forms, addToken));
             }
-            private static void PostRequest(string url, WWWForm forms, Action<UnityWebRequest> callback, bool addToken = false)
+
+            private static void PostRequest(string url, WWWForm forms, Action<UnityWebRequest> callback,
+                bool addToken = false)
             {
                 Run(new Request_Post(url, callback, forms, addToken));
             }
 
-            private static void GetRequest<T>(string url, Dictionary<string, object> forms, Action<T> callback, bool addToken = false) where T : ResponseModel
+            private static void GetRequest<T>(string url, Dictionary<string, object> forms, Action<T> callback,
+                bool addToken = false) where T : ResponseModel
             {
                 GetRequest(url, forms, (req) =>
                 {
@@ -335,6 +381,7 @@ namespace MultyFramework
                         DisplayDialog("Dispose Err", req.downloadHandler.text);
                         return;
                     }
+
                     bool bo = t.CheckCode(false);
                     if (bo && callback != null)
                     {
@@ -342,7 +389,9 @@ namespace MultyFramework
                     }
                 }, addToken);
             }
-            private static void PostRequest<T>(string url, WWWForm forms, Action<T> callback, bool addToken = false) where T : ResponseModel
+
+            private static void PostRequest<T>(string url, WWWForm forms, Action<T> callback, bool addToken = false)
+                where T : ResponseModel
             {
                 PostRequest(url, forms, (req) =>
                 {
@@ -365,7 +414,7 @@ namespace MultyFramework
 
             public static void CheckToken(string token, Action<LoginModel> callback)
             {
-                GetRequest<LoginModel>(PkgConstant.API_LOGIN, null, (m) =>
+                PostRequest<LoginModel>(PkgConstant.API_VERIFY_TOKEN, null, (m) =>
                 {
                     m.data.token = token;
                     if (callback != null)
@@ -375,24 +424,54 @@ namespace MultyFramework
                 }, true);
             }
 
-            public static void Login(string email, string pwd, Action<LoginModel> callback)
+            public static void ChangePassword(string pwd, Action<ResponseModel> callback)
             {
                 WWWForm wwwForm = new WWWForm();
-                wwwForm.AddField("user_type", (int)UserType.EMAIL);
+                wwwForm.AddField("password", pwd);
+                PostRequest<ResponseModel>(PkgConstant.API_CHANGE_PASSWORD, wwwForm, callback, true);
+            }
+
+            #region Email
+
+            public static void LoginFormEmail(string email, string pwd, Action<LoginModel> callback)
+            {
+                WWWForm wwwForm = new WWWForm();
+                wwwForm.AddField("user_type", ((int) UserType.EMAIL).ToString());
                 wwwForm.AddField("email", email);
                 wwwForm.AddField("password", pwd);
                 PostRequest<LoginModel>(PkgConstant.API_LOGIN, wwwForm, callback);
             }
 
-            public static void Signup(string nickName, string email, string pwd, Action<SignupModel> callback)
+            public static void SignupFormEmail(string nickName, string email, string pwd, Action<SignupModel> callback)
             {
                 WWWForm wwwForm = new WWWForm();
-                wwwForm.AddField("user_type", (int)UserType.EMAIL);
+                wwwForm.AddField("user_type", ((int) UserType.EMAIL).ToString());
                 wwwForm.AddField("nick_name", nickName);
                 wwwForm.AddField("email", email);
                 wwwForm.AddField("password", pwd);
                 PostRequest<SignupModel>(PkgConstant.API_SIGNUP, wwwForm, callback);
             }
+
+            public static void ForgePasswordRequestFormEmail(string email, Action<ResponseModel> callback)
+            {
+                WWWForm wwwForm = new WWWForm();
+                wwwForm.AddField("user_type", ((int) UserType.EMAIL).ToString());
+                wwwForm.AddField("email", email);
+                PostRequest<ResponseModel>(PkgConstant.API_FORGE_PASSWORD_REQUEST, wwwForm, callback, false);
+            }
+
+            public static void ForgePasswordFormEmail(string email, string pwd, string code,
+                Action<ResponseModel> callback)
+            {
+                WWWForm wwwForm = new WWWForm();
+                wwwForm.AddField("user_type", ((int) UserType.EMAIL).ToString());
+                wwwForm.AddField("password", pwd);
+                wwwForm.AddField("email", email);
+                wwwForm.AddField("code", code);
+                PostRequest<ResponseModel>(PkgConstant.API_FORGE_PASSWORD, wwwForm, callback, false);
+            }
+
+            #endregion
 
             #endregion
 
@@ -475,14 +554,9 @@ namespace MultyFramework
                     }
                 });
             }
+
             #endregion
         }
-
-
-
-
-
-
 
 
         private static Encoding _encoding = Encoding.UTF8;
@@ -490,6 +564,7 @@ namespace MultyFramework
         private bool _describtionFold = true;
         private bool _dependencesFold = true;
         private Vector2 _scroll;
+
         public override void OnGUI(Rect rect)
         {
             base.OnGUI(rect);
@@ -503,6 +578,7 @@ namespace MultyFramework
                     {
                         Help.BrowseURL(helpurl);
                     }
+
                     GUILayout.Space(Contents.gap);
                     GUILayout.Label(Application.unityVersion);
                     GUILayout.FlexibleSpace();
@@ -522,6 +598,7 @@ namespace MultyFramework
                         _dependencesFold = !_dependencesFold;
                         Event.current.Use();
                     }
+
                     last.xMin -= Contents.gap;
                     last.width = Contents.gap;
 
@@ -547,6 +624,7 @@ namespace MultyFramework
                         _describtionFold = !_describtionFold;
                         Event.current.Use();
                     }
+
                     last.xMin -= Contents.gap;
                     last.width = Contents.gap;
                     _describtionFold = EditorGUI.Foldout(last, _describtionFold, "");
@@ -564,28 +642,38 @@ namespace MultyFramework
 
         protected virtual void ToolGUI()
         {
-
         }
 
 
 
 
-
+        protected class ForgetPasswordInfo
+        {
+            public string email;
+            public string code;
+            public string newPsd;
+        }
         protected class LoginInfo
         {
             public string email;
             public string password;
             public bool see;
         }
+
         protected class RegisterInfo
         {
             public string email;
             public string password;
             public string nick_name;
         }
+
         public class UploadInfo
         {
-            public string unityVersion { get { return Application.unityVersion; } }
+            public string unityVersion
+            {
+                get { return Application.unityVersion; }
+            }
+
             public bool isPublic = true;
             public string name = "pkg name";
             public string version = "0.0.0.1";
@@ -597,15 +685,25 @@ namespace MultyFramework
         }
 
 
+        private static string _userjsonPath
+        {
+            get { return MultyFrameworkEditorTool.rootPath + "/user.json"; }
+        }
 
+        protected static bool _login
+        {
+            get { return window.multyDrawersInfo.login; }
+        }
 
+        protected static string _token
+        {
+            get { return window.multyDrawersInfo.token; }
+        }
 
-
-
-        private static string _userjsonPath { get { return MultyFrameworkEditorTool.rootPath + "/user.json"; } }
-        protected static bool _login { get { return window.multyDrawersInfo.login; } }
-        protected static string _token { get { return window.multyDrawersInfo.token; } }
-        protected static MultyFrameworkDrawersInfo.UserJson _userJson { get { return window.multyDrawersInfo.userJson; } }
+        protected static MultyFrameworkDrawersInfo.UserJson _userJson
+        {
+            get { return window.multyDrawersInfo.userJson; }
+        }
 
 
         public static void Init()
@@ -614,25 +712,35 @@ namespace MultyFramework
             window.multyDrawersInfo.userJson = CheckUserJson();
             LoginWithToken();
         }
+
+
+
+
+
         private static MultyFrameworkDrawersInfo.UserJson CheckUserJson()
         {
             if (File.Exists(_userjsonPath))
             {
-                return JsonUtility.FromJson<MultyFrameworkDrawersInfo.UserJson>(File.ReadAllText(_userjsonPath, _encoding));
+                return JsonUtility.FromJson<MultyFrameworkDrawersInfo.UserJson>(File.ReadAllText(_userjsonPath,
+                    _encoding));
             }
+
             return new MultyFrameworkDrawersInfo.UserJson();
         }
+
         private static void FreshWebCollection()
         {
             window.multyDrawersInfo.selfInfos.Clear();
             window.multyDrawersInfo.infos.Clear();
 
-            HttpPkg.GetPkgInfoList((m) => {
+            HttpPkg.GetPkgInfoList((m) =>
+            {
                 var names = m.data;
                 for (int i = 0; i < names.Count; i++)
-                { 
-                    HttpPkg.GetPkgInfos(names[i],
-                        (model) => {
+                {
+                    HttpPkg.GetPkgInfos(names[i].pkg_name,
+                        (model) =>
+                        {
                             WebCollectionInfo info = new WebCollectionInfo()
                             {
                                 name = model.data[0].pkg_name,
@@ -651,6 +759,7 @@ namespace MultyFramework
                                     assetPath = model.data[j].pkg_path,
                                 };
                             }
+
                             info.versions = versions;
                             window.multyDrawersInfo.infos.Add(info);
                             if (window.multyDrawersInfo.infos.Count == names.Count)
@@ -659,19 +768,20 @@ namespace MultyFramework
                                 {
                                     for (int j = 0; j < window.multyDrawersInfo.infos.Count; j++)
                                     {
-                                        if (window.multyDrawersInfo.infos[j].author == window.multyDrawersInfo.userJson.name)
+                                        if (window.multyDrawersInfo.infos[j].author ==
+                                            window.multyDrawersInfo.userJson.name)
                                         {
                                             window.multyDrawersInfo.selfInfos.Add(window.multyDrawersInfo.infos[j]);
                                         }
                                     }
                                 }
+
                                 window.multyDrawersInfo.FreshDrawers();
                             }
                         });
                 }
             });
         }
-       
 
 
         protected static void ClearUserJson()
@@ -682,22 +792,23 @@ namespace MultyFramework
             {
                 File.Delete(_userjsonPath);
             }
+
             window.multyDrawersInfo.infos.Clear();
             window.multyDrawersInfo.selfInfos.Clear();
             window.multyDrawersInfo.FreshDrawers();
         }
 
 
-
         protected static void TryLogin(string email, string password)
         {
-            HttpPkg.Login(email, password, (model) =>
+            HttpPkg.LoginFormEmail(email, password, (model) =>
             {
                 WriteUserJson(email, model.data.token, model.data.nick_name);
                 FreshWebCollection();
             });
         }
-        private static void WriteUserJson(string email, string token, string name,bool login=true)
+
+        private static void WriteUserJson(string email, string token, string name, bool login = true)
         {
             window.multyDrawersInfo.login = login;
             window.multyDrawersInfo.userJson = new MultyFrameworkDrawersInfo.UserJson()
@@ -712,33 +823,42 @@ namespace MultyFramework
 
         protected static void Signup(string name, string email, string password)
         {
-            HttpPkg.Signup(name, email, password, (model) =>
+            HttpPkg.SignupFormEmail(name, email, password, (model) =>
             {
-
-                WriteUserJson(email, model.data.token, name,false);
+                WriteUserJson(email, model.data.token, name, false);
                 ShowNotification("Success");
-               // LoginWithToken();
+                 LoginWithToken();
             });
-
         }
 
         private static void LoginWithToken()
         {
             window.multyDrawersInfo.login = false;
             HttpPkg.CheckToken(
-            _token
-            , (model) =>
-            {
-                window.multyDrawersInfo.login = true;
-                FreshWebCollection();
-            });
+                _token
+                , (model) =>
+                {
+                    window.multyDrawersInfo.login = true;
+                    FreshWebCollection();
+                });
         }
 
-
+        public static void ForgetEmailPassword(string email)
+        {
+            HttpPkg.ForgePasswordRequestFormEmail(email, (model) => { });
+        }
+        public static void ChangeEmailPassword(string email,string password,string code)
+        {
+            HttpPkg.ForgePasswordFormEmail(email, password,code,(model) => {
+                ShowNotification("Success");
+                ClearUserJson();
+            });
+        }
         protected static void UploadPkg(UploadInfo uploadInfo)
         {
             MultyFrameworkEditorTool.CreateVersionJson(uploadInfo.assetPath, uploadInfo);
-            AssetDatabase.ExportPackage(uploadInfo.assetPath, uploadInfo.name + ".unitypackage", ExportPackageOptions.Recurse);
+            AssetDatabase.ExportPackage(uploadInfo.assetPath, uploadInfo.name + ".unitypackage",
+                ExportPackageOptions.Recurse);
             byte[] bytes = File.ReadAllBytes("Assets/../" + uploadInfo.name + ".unitypackage");
             PkgInfo form = new PkgInfo()
             {
@@ -747,7 +867,9 @@ namespace MultyFramework
                 pkg_path = uploadInfo.assetPath,
                 pkg_name = uploadInfo.name,
                 version = uploadInfo.version,
-                permissions = uploadInfo.isPublic ? PkgConstant.PKG_PERMISSIONS_PUBLIC : PkgConstant.PKG_PERMISSIONS_PRIVATE,
+                permissions = uploadInfo.isPublic
+                    ? PkgConstant.PKG_PERMISSIONS_PUBLIC
+                    : PkgConstant.PKG_PERMISSIONS_PRIVATE,
                 help_url = uploadInfo.helpurl,
                 describtion = uploadInfo.describtion,
             };
@@ -755,7 +877,9 @@ namespace MultyFramework
             {
                 form.AddDependences(uploadInfo.dependences[i]);
             }
-            HttpPkg.UploadPkg(form, bytes, (m) => {
+
+            HttpPkg.UploadPkg(form, bytes, (m) =>
+            {
                 File.Delete("Assets/../" + uploadInfo.name + ".unitypackage");
                 ShowNotification("Success");
                 FreshWebCollection();
@@ -763,4 +887,3 @@ namespace MultyFramework
         }
     }
 }
-
