@@ -1,9 +1,6 @@
 ﻿using UnityEngine;
 using UnityEditor;
-using System.Collections.Generic;
-using System.IO;
 using System;
-using System.Text;
 
 namespace MultyFramework
 {
@@ -12,7 +9,7 @@ namespace MultyFramework
 
         private enum UserOperation
         {
-            register, Login, ForgetPassword, Upload
+            Login, register, ForgetPassword, Upload
         }
         private UserOperation _userOperation;
 
@@ -137,7 +134,7 @@ namespace MultyFramework
                             ShowNotification("Err: password is null");
                             return;
                         }
-                        TryLogin(_loginInfo.email, _loginInfo.password);
+                        TryLogin(_loginInfo);
                     }
                     GUILayout.EndHorizontal();
                 }
@@ -168,7 +165,7 @@ namespace MultyFramework
                     ShowNotification("Err: Name is null");
                     return;
                 }
-                Signup(_registerInfo.nick_name, _registerInfo.email, _registerInfo.password);
+                Signup(_registerInfo);
             }
             GUILayout.EndHorizontal();
         }
@@ -244,7 +241,7 @@ namespace MultyFramework
                 _forgetPsdInfo.code= EditorGUILayout.TextField("Code", _forgetPsdInfo.code);
                 if (GUILayout.Button("Send",GUILayout.Width(Contents.gap*4)))
                 {
-                    ForgetEmailPassword(_forgetPsdInfo.email);
+                    ForgetEmailPassword(_forgetPsdInfo);
                 }
                 GUILayout.EndHorizontal();
             }
@@ -255,7 +252,7 @@ namespace MultyFramework
                 GUILayout.FlexibleSpace();
                 if (GUILayout.Button(Contents.Go))
                 {
-                    ChangeEmailPassword(_forgetPsdInfo.email,_forgetPsdInfo.newPsd, _forgetPsdInfo.code);
+                    ChangeEmailPassword(_forgetPsdInfo);
                 }
                 GUILayout.EndHorizontal();
             }

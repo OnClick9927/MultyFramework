@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
@@ -12,7 +11,7 @@ using UnityEngine.Networking;
 #pragma warning disable 0649
 namespace MultyFramework
 {
-    public abstract class MultyFrameworkDrawer : PanelGUIDrawer
+    public partial class MultyFrameworkDrawer
     {
         public static class PkgConstant
         {
@@ -38,8 +37,8 @@ namespace MultyFramework
             public const string API_DOWNLOAD_PKG = HOST + "download_pkg";
             public const string API_PKG_INFO_LIST = HOST + "pkg_info_list";
 
-            public static string PKG_PERMISSIONS_PRIVATE = ((int) PkgPermissions.PRIVATE).ToString();
-            public static string PKG_PERMISSIONS_PUBLIC = ((int) PkgPermissions.PUBLIC).ToString();
+            public static string PKG_PERMISSIONS_PRIVATE = ((int)PkgPermissions.PRIVATE).ToString();
+            public static string PKG_PERMISSIONS_PUBLIC = ((int)PkgPermissions.PUBLIC).ToString();
         }
 
         public enum Code
@@ -112,7 +111,7 @@ namespace MultyFramework
             {
                 switch (code)
                 {
-                    case (int) Code.OK:
+                    case (int)Code.OK:
                         return true;
                     default:
                         DisplayDialog("Err " + code, this.msg);
@@ -337,6 +336,7 @@ namespace MultyFramework
                     {
                         _req.Compelete();
                         _requests.Remove(_req);
+                        break;
                     }
                     else
                     {
@@ -436,7 +436,7 @@ namespace MultyFramework
             public static void LoginFormEmail(string email, string pwd, Action<LoginModel> callback)
             {
                 WWWForm wwwForm = new WWWForm();
-                wwwForm.AddField("user_type", ((int) UserType.EMAIL).ToString());
+                wwwForm.AddField("user_type", ((int)UserType.EMAIL).ToString());
                 wwwForm.AddField("email", email);
                 wwwForm.AddField("password", pwd);
                 PostRequest<LoginModel>(PkgConstant.API_LOGIN, wwwForm, callback);
@@ -445,7 +445,7 @@ namespace MultyFramework
             public static void SignupFormEmail(string nickName, string email, string pwd, Action<SignupModel> callback)
             {
                 WWWForm wwwForm = new WWWForm();
-                wwwForm.AddField("user_type", ((int) UserType.EMAIL).ToString());
+                wwwForm.AddField("user_type", ((int)UserType.EMAIL).ToString());
                 wwwForm.AddField("nick_name", nickName);
                 wwwForm.AddField("email", email);
                 wwwForm.AddField("password", pwd);
@@ -455,7 +455,7 @@ namespace MultyFramework
             public static void ForgePasswordRequestFormEmail(string email, Action<ResponseModel> callback)
             {
                 WWWForm wwwForm = new WWWForm();
-                wwwForm.AddField("user_type", ((int) UserType.EMAIL).ToString());
+                wwwForm.AddField("user_type", ((int)UserType.EMAIL).ToString());
                 wwwForm.AddField("email", email);
                 PostRequest<ResponseModel>(PkgConstant.API_FORGE_PASSWORD_REQUEST, wwwForm, callback, false);
             }
@@ -464,7 +464,7 @@ namespace MultyFramework
                 Action<ResponseModel> callback)
             {
                 WWWForm wwwForm = new WWWForm();
-                wwwForm.AddField("user_type", ((int) UserType.EMAIL).ToString());
+                wwwForm.AddField("user_type", ((int)UserType.EMAIL).ToString());
                 wwwForm.AddField("password", pwd);
                 wwwForm.AddField("email", email);
                 wwwForm.AddField("code", code);
@@ -558,6 +558,10 @@ namespace MultyFramework
             #endregion
         }
 
+    }
+    public abstract partial class MultyFrameworkDrawer : PanelGUIDrawer
+    {
+       
 
         private static Encoding _encoding = Encoding.UTF8;
 
@@ -689,6 +693,23 @@ namespace MultyFramework
         {
             get { return MultyFrameworkEditorTool.rootPath + "/user.json"; }
         }
+        private static string _pkgjsonPath
+        {
+            get { return MultyFrameworkEditorTool.rootPath + "/pkgs.json"; }
+        }
+        private static string _pkgversionjsonPath
+        {
+            get
+            {
+                string path = MultyFrameworkEditorTool.rootPath + "/pkgversion";
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+                return path;
+
+            }
+        }
 
         protected static bool _login
         {
@@ -735,54 +756,89 @@ namespace MultyFramework
 
             HttpPkg.GetPkgInfoList((m) =>
             {
-                var names = m.data;
-                for (int i = 0; i < names.Count; i++)
+                var datas = m.data;
+                List<PkgInfoListModel.Data> localDatas = new List<PkgInfoListModel.Data>();
+                if (File.Exists(_pkgjsonPath))
                 {
-                    HttpPkg.GetPkgInfos(names[i].pkg_name,
-                        (model) =>
-                        {
-                            WebCollectionInfo info = new WebCollectionInfo()
+                    localDatas = JsonUtility.FromJson<PkgInfoListModel>(File.ReadAllText(_pkgjsonPath)).data;
+                }
+                File.WriteAllText(_pkgjsonPath, JsonUtility.ToJson(m,true));
+
+                for (int i = 0; i < datas.Count; i++)
+                {
+                    var _data = datas[i];
+                    var _tmp = localDatas.Find((d) =>
+                    {
+                        return d.pkg_name == _data.pkg_name && d.last_time == _data.last_time && d.last_version == _data.last_version;
+                    });
+                    if (_tmp != null)
+                    {
+                        localDatas.Remove(_tmp);
+                        string path = Path.Combine(_pkgversionjsonPath, _data.pkg_name + ".json");
+                        WebCollectionInfo info = JsonUtility.FromJson<WebCollectionInfo>(File.ReadAllText(path));
+                        TryFinish(info, localDatas, datas);
+                    }
+                    else
+                    {
+                        HttpPkg.GetPkgInfos(_data.pkg_name,
+                            (model) =>
                             {
-                                name = model.data[0].pkg_name,
-                                author = model.data[0].author,
-                            };
-                            WebCollectionInfo.Version[] versions = new WebCollectionInfo.Version[model.data.Count];
-                            for (int j = 0; j < model.data.Count; j++)
-                            {
-                                versions[j] = new WebCollectionInfo.Version()
+                                WebCollectionInfo info = new WebCollectionInfo()
                                 {
-                                    version = model.data[j].version,
-                                    describtion = model.data[j].describtion,
-                                    dependences = model.data[j].GetDependences().ToArray(),
-                                    helpurl = model.data[j].help_url,
-                                    unityVersion = model.data[j].unity_version,
-                                    assetPath = model.data[j].pkg_path,
+                                    name = model.data[0].pkg_name,
+                                    author = model.data[0].author,
                                 };
-                            }
-
-                            info.versions = versions;
-                            window.multyDrawersInfo.infos.Add(info);
-                            if (window.multyDrawersInfo.infos.Count == names.Count)
-                            {
-                                if (!string.IsNullOrEmpty(window.multyDrawersInfo.userJson.name))
+                                WebCollectionInfo.Version[] versions = new WebCollectionInfo.Version[model.data.Count];
+                                for (int j = 0; j < model.data.Count; j++)
                                 {
-                                    for (int j = 0; j < window.multyDrawersInfo.infos.Count; j++)
+                                    versions[j] = new WebCollectionInfo.Version()
                                     {
-                                        if (window.multyDrawersInfo.infos[j].author ==
-                                            window.multyDrawersInfo.userJson.name)
-                                        {
-                                            window.multyDrawersInfo.selfInfos.Add(window.multyDrawersInfo.infos[j]);
-                                        }
-                                    }
+                                        version = model.data[j].version,
+                                        describtion = model.data[j].describtion,
+                                        dependences = model.data[j].GetDependences().ToArray(),
+                                        helpurl = model.data[j].help_url,
+                                        unityVersion = model.data[j].unity_version,
+                                        assetPath = model.data[j].pkg_path,
+                                    };
                                 }
-
-                                window.multyDrawersInfo.FreshDrawers();
-                            }
-                        });
+                                info.versions = versions;
+                                File.WriteAllText(Path.Combine(_pkgversionjsonPath, info.name + ".json"), JsonUtility.ToJson(info,true));
+                                TryFinish(info, localDatas, datas);
+                            });
+                    }
                 }
             });
         }
+        private static void TryFinish(WebCollectionInfo info , List<PkgInfoListModel.Data> localDatas, List<PkgInfoListModel.Data> datas)
+        {
+            window.multyDrawersInfo.infos.Add(info);
 
+            if (window.multyDrawersInfo.infos.Count == datas.Count)
+            {
+                localDatas.RemoveAll((_d) => {
+                    string _path = Path.Combine(_pkgversionjsonPath, _d.pkg_name + ".json");
+                    if (File.Exists(_path))
+                    {
+                        File.Delete(_path);
+                    }
+                    return true;
+                });
+
+
+                if (!string.IsNullOrEmpty(window.multyDrawersInfo.userJson.name))
+                {
+                    for (int j = 0; j < window.multyDrawersInfo.infos.Count; j++)
+                    {
+                        if (window.multyDrawersInfo.infos[j].author ==
+                            window.multyDrawersInfo.userJson.name)
+                        {
+                            window.multyDrawersInfo.selfInfos.Add(window.multyDrawersInfo.infos[j]);
+                        }
+                    }
+                }
+                window.multyDrawersInfo.FreshDrawers();
+            }
+        }
 
         protected static void ClearUserJson()
         {
@@ -799,11 +855,11 @@ namespace MultyFramework
         }
 
 
-        protected static void TryLogin(string email, string password)
+        protected static void TryLogin(LoginInfo info)
         {
-            HttpPkg.LoginFormEmail(email, password, (model) =>
+            HttpPkg.LoginFormEmail(info.email, info.password, (model) =>
             {
-                WriteUserJson(email, model.data.token, model.data.nick_name);
+                WriteUserJson(info.email, model.data.token, model.data.nick_name);
                 FreshWebCollection();
             });
         }
@@ -821,11 +877,11 @@ namespace MultyFramework
             File.WriteAllText(_userjsonPath, JsonUtility.ToJson(window.multyDrawersInfo.userJson, true), _encoding);
         }
 
-        protected static void Signup(string name, string email, string password)
+        protected static void Signup(RegisterInfo info)
         {
-            HttpPkg.SignupFormEmail(name, email, password, (model) =>
+            HttpPkg.SignupFormEmail(info.nick_name, info.email, info.password, (model) =>
             {
-                WriteUserJson(email, model.data.token, name, false);
+                WriteUserJson(info.email, model.data.token, info.nick_name, false);
                 ShowNotification("Success");
                  LoginWithToken();
             });
@@ -843,13 +899,13 @@ namespace MultyFramework
                 });
         }
 
-        public static void ForgetEmailPassword(string email)
+        protected static void ForgetEmailPassword(ForgetPasswordInfo info)
         {
-            HttpPkg.ForgePasswordRequestFormEmail(email, (model) => { });
+            HttpPkg.ForgePasswordRequestFormEmail(info.email, (model) => { });
         }
-        public static void ChangeEmailPassword(string email,string password,string code)
+        protected static void ChangeEmailPassword(ForgetPasswordInfo info)
         {
-            HttpPkg.ForgePasswordFormEmail(email, password,code,(model) => {
+            HttpPkg.ForgePasswordFormEmail(info.email, info.newPsd,info.code,(model) => {
                 ShowNotification("Success");
                 ClearUserJson();
             });

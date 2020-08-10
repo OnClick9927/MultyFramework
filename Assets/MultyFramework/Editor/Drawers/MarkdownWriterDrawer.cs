@@ -7,26 +7,6 @@ namespace MultyFramework
 {
     public class MarkdownWriterDrawer : MarkdownGUIDrawer
     {
-        [System.Serializable]
-        public class A
-        {
-            public int code;
-            public B[] data;
-            public string msg;
-            [System.Serializable]
-            public class B
-            {
-               // public string name;
-                public string version;
-            }
-        }
-        [MenuItem("777/666")]
-        public static void GG()
-        {
-            string str = "{\"code\":200,\"data\":{\"upkg\":\"1.0.0\",\"upkg1\":\"1.0.8\",\"upkg2\":\"1.0.7\",\"upkg3\":\"1.0.10\"},\"msg\":\"succend\"}";
-          var a=  JsonUtility.FromJson<A>(str);
-            Debug.Log(a);
-        }
         private enum ShowType
         {
             EditorWithBlackPreview,
