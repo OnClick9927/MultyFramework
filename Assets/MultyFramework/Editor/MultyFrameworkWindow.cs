@@ -448,7 +448,7 @@ namespace MultyFramework
                           new Vector2(position.width, position.height - r.height)));
                 }
             }
-            //Repaint();
+            Repaint();
         }
 
         void OnDestroy()

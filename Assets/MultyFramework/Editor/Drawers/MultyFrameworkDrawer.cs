@@ -16,10 +16,10 @@ namespace MultyFramework
         public static class PkgConstant
         {
             // public const string HOST = "https://upkg.org/api/";
-            public const string HOST = "https://test-api.upkg.org/v1/";
+            //public const string HOST = "https://test-api.upkg.org/v1/";
             // public const string HOST = "https://api.upkg.org/v1/";
+            public const string HOST = "https://api.upkg.net/v1/";
 
-            // user
             public const string API_LOGIN = HOST + "login";
             public const string API_SIGNUP = HOST + "signup";
 
@@ -99,6 +99,10 @@ namespace MultyFramework
                 var responseModel = JsonUtility.FromJson<T>(text);
                 responseModel.text = text;
                 responseModel.url = url;
+                if (responseModel != null)
+                {
+                    ShowNotification("Success");
+                }
                 return responseModel;
             }
 
@@ -246,6 +250,7 @@ namespace MultyFramework
 
                     if (_callback != null)
                     {
+                        ShowNotification("Request Sucess");
                         _callback.Invoke(request);
                     }
 
@@ -308,7 +313,7 @@ namespace MultyFramework
                 }
             }
 
-            private const int maxRequest = 5;
+            private const int maxRequest = 20;
             private static Queue<Request> _waitRequests;
             private static List<Request> _requests;
 
@@ -336,7 +341,7 @@ namespace MultyFramework
                     {
                         _req.Compelete();
                         _requests.Remove(_req);
-                        break;
+                      //  break;
                     }
                     else
                     {
@@ -403,6 +408,7 @@ namespace MultyFramework
                     }
 
                     bool bo = t.CheckCode(false);
+                 
                     if (bo && callback != null)
                     {
                         callback.Invoke(t);
@@ -882,7 +888,6 @@ namespace MultyFramework
             HttpPkg.SignupFormEmail(info.nick_name, info.email, info.password, (model) =>
             {
                 WriteUserJson(info.email, model.data.token, info.nick_name, false);
-                ShowNotification("Success");
                  LoginWithToken();
             });
         }
@@ -906,13 +911,12 @@ namespace MultyFramework
         protected static void ChangeEmailPassword(ForgetPasswordInfo info)
         {
             HttpPkg.ForgePasswordFormEmail(info.email, info.newPsd,info.code,(model) => {
-                ShowNotification("Success");
                 ClearUserJson();
             });
         }
         protected static void UploadPkg(UploadInfo uploadInfo)
         {
-            MultyFrameworkEditorTool.CreateVersionJson(uploadInfo.assetPath, uploadInfo);
+           // MultyFrameworkEditorTool.CreateVersionJson(uploadInfo.assetPath, uploadInfo);
             AssetDatabase.ExportPackage(uploadInfo.assetPath, uploadInfo.name + ".unitypackage",
                 ExportPackageOptions.Recurse);
             byte[] bytes = File.ReadAllBytes("Assets/../" + uploadInfo.name + ".unitypackage");
@@ -937,7 +941,6 @@ namespace MultyFramework
             HttpPkg.UploadPkg(form, bytes, (m) =>
             {
                 File.Delete("Assets/../" + uploadInfo.name + ".unitypackage");
-                ShowNotification("Success");
                 FreshWebCollection();
             });
         }

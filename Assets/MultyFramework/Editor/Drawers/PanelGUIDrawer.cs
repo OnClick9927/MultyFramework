@@ -60,7 +60,7 @@ namespace MultyFramework
         /// <summary>
         /// 依赖内容
         /// </summary>
-        public virtual string[] dependences { get; }
+        public virtual string[] dependences { get { return new string[] { MultyFrameworkEditorTool.framewokName }; } }
 
         /// <summary>
         /// 所在位置

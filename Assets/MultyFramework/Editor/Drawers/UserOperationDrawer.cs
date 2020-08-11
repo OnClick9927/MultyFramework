@@ -89,7 +89,6 @@ namespace MultyFramework
                         {
                             HttpPkg.DeletePkg(_selfInfos[i].name, _selfInfos[i].versions[j].version, (m) =>
                             {
-                                ShowNotification("Delete Sucess");
                             });
                         }
                         GUILayout.EndHorizontal();
