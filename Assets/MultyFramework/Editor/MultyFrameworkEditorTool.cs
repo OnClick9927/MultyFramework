@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
@@ -115,7 +116,7 @@ namespace MultyFramework
                     case (int)Code.OK:
                         return true;
                     default:
-                        DisplayDialog("Err " + code, this.msg);
+                        DisplayDialog("Err " + code, this.msg + "\n" + url);
                         return false;
                 }
             }
@@ -252,6 +253,17 @@ namespace MultyFramework
                     }
 
                     request.Abort();
+                    request.Dispose();
+                }
+                public static long GetTimeStamp(bool bflag = true)
+                {
+                    TimeSpan ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
+                    long ret;
+                    if (bflag)
+                        ret = Convert.ToInt64(ts.TotalSeconds);
+                    else
+                        ret = Convert.ToInt64(ts.TotalMilliseconds);
+                    return ret;
                 }
             }
 
@@ -261,6 +273,7 @@ namespace MultyFramework
                     bool addToken = false) : base(url, callback, addToken)
                 {
                     string newUrl = url;
+
                     if (forms != null && forms.Count > 0)
                     {
                         newUrl += "?";
@@ -269,9 +282,16 @@ namespace MultyFramework
                             newUrl += string.Format("{0}={1}", item.Key, item.Value) + "&";
                         }
 
-                        newUrl = newUrl.Substring(0, newUrl.Length - 1);
-                    }
+                      //  newUrl = newUrl.Substring(0, newUrl.Length - 1);
+                        newUrl +=  GetTimeStamp();
 
+                    }
+                    else
+                    {
+                        newUrl += "?" + GetTimeStamp();
+
+                    }
+                    //Debug.LogError(newUrl);
                     request = UnityWebRequest.Get(newUrl);
                     if (addToken)
                     {
@@ -295,6 +315,8 @@ namespace MultyFramework
                     {
                         forms = new WWWForm();
                     }
+                    url += "?" + GetTimeStamp();
+                   // Debug.LogError(url);
 
                     request = UnityWebRequest.Post(url, forms);
                     if (addToken)
@@ -419,7 +441,7 @@ namespace MultyFramework
             {
                 PostRequest<LoginModel>(PkgConstant.API_VERIFY_TOKEN, null, (m) =>
                 {
-                    m.data.token = token;
+                   // m.data.token = token;
                     if (callback != null)
                     {
                         callback(m);
@@ -538,7 +560,7 @@ namespace MultyFramework
             /// <param name="version">版本为空则获取最新, 赋值则获取指定版本的</param>
             public static void GetPkgInfoList(Action<PkgInfoListModel> callback)
             {
-                GetRequest<PkgInfoListModel>(PkgConstant.API_PKG_INFO_LIST, null, callback, true);
+                PostRequest<PkgInfoListModel>(PkgConstant.API_PKG_INFO_LIST, null, callback, true);
             }
 
             public static void DownloadPkg(string pkgName, string version, string downloadPath, Action onCompleted)
@@ -548,7 +570,6 @@ namespace MultyFramework
                 if (!string.IsNullOrEmpty(version))
                     url += "&version=" + version;
                 url += "&token=" + token;
-
                 GetRequest(url, null, (req) =>
                 {
                     File.WriteAllBytes(downloadPath, req.downloadHandler.data);
@@ -600,6 +621,19 @@ namespace MultyFramework
             get
             {
                 string path = MultyFrameworkEditorTool.rootPath + "/pkgs";
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+                return path;
+
+            }
+        }
+        private static string localPkgPath
+        {
+            get
+            {
+                string path = MultyFrameworkEditorTool.rootPath + "/localpkgs";
                 if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path);
@@ -685,11 +719,17 @@ namespace MultyFramework
             public List<string> dependences = new List<string>();
         }
 
+        [MenuItem(framewokName + "/Open Memory")]
+        static void OpenMemory()
+        {
+            EditorUtility.OpenWithDefaultApp(rootPath);
+        }
         [MenuItem(framewokName + "/Clear Memory")]
         static void ClearMemory()
         {
             Directory.Delete(rootPath, true);
         }
+
         [MenuItem(framewokName + "/Update")]
         static void UpdateFramework()
         {
@@ -923,7 +963,7 @@ namespace MultyFramework
 
             HttpPkg.UploadPkg(form, bytes, (m) =>
             {
-                File.Delete("Assets/../" + uploadInfo.name + ".unitypackage");
+                File.Move("Assets/../" + uploadInfo.name + ".unitypackage", Path.Combine(localPkgPath, uploadInfo.name + "_" + uploadInfo.version + ".unitypackage"));
                 FreshWebCollection();
             });
         }
