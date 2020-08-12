@@ -27,10 +27,10 @@ namespace MultyFramework
         public override string[] dependences { get { return _dependences; } }
         public override string helpurl { get { return MultyFrameworkEditorTool.frameworkUrl; } }
 
-        private LoginInfo _loginInfo;
-        private RegisterInfo _registerInfo;
-        private UploadInfo _uploadInfo;
-        private ForgetPasswordInfo _forgetPsdInfo;
+        private MultyFrameworkEditorTool.LoginInfo _loginInfo;
+        private MultyFrameworkEditorTool.RegisterInfo _registerInfo;
+        private MultyFrameworkEditorTool.UploadInfo _uploadInfo;
+        private MultyFrameworkEditorTool.ForgetPasswordInfo _forgetPsdInfo;
 
 
         protected override void ToolGUI()
@@ -46,12 +46,12 @@ namespace MultyFramework
                     LoginGUI();
                     break;
                 case UserOperation.ForgetPassword:
-                    GUI.enabled = !_login;
+                    GUI.enabled = !MultyFrameworkEditorTool.login;
                     ForGetPasswordGUI();
                     GUI.enabled = true;
                     break;
                 case UserOperation.Upload:
-                    GUI.enabled = _login;
+                    GUI.enabled = MultyFrameworkEditorTool.login;
                     UploadGUI();
                     GUI.enabled = true;
                     break;
@@ -64,13 +64,13 @@ namespace MultyFramework
 
         private void LoginGUI()
         {
-            if (_login)
+            if (MultyFrameworkEditorTool.login)
             {
                 GUILayout.BeginHorizontal();
                 GUILayout.FlexibleSpace();
                 if (GUILayout.Button("Logout"))
                 {
-                    ClearUserJson();
+                    MultyFrameworkEditorTool.ClearUserJson();
                 }
                 GUILayout.EndHorizontal();
                 GUILayout.Space(Contents.gap);
@@ -87,9 +87,7 @@ namespace MultyFramework
                         GUILayout.Label(_selfInfos[i].versions[j].version);
                         if (GUILayout.Button("", Styles.minus, GUILayout.Width(Contents.gap * 2)))
                         {
-                            HttpPkg.DeletePkg(_selfInfos[i].name, _selfInfos[i].versions[j].version, (m) =>
-                            {
-                            });
+                            MultyFrameworkEditorTool.DeletePackage(_selfInfos[i].name, _selfInfos[i].versions[j].version);
                         }
                         GUILayout.EndHorizontal();
                     }
@@ -133,7 +131,7 @@ namespace MultyFramework
                             ShowNotification("Err: password is null");
                             return;
                         }
-                        TryLogin(_loginInfo);
+                        MultyFrameworkEditorTool.TryLogin(_loginInfo);
                     }
                     GUILayout.EndHorizontal();
                 }
@@ -164,14 +162,14 @@ namespace MultyFramework
                     ShowNotification("Err: Name is null");
                     return;
                 }
-                Signup(_registerInfo);
+                MultyFrameworkEditorTool.Signup(_registerInfo);
             }
             GUILayout.EndHorizontal();
         }
 
         private void UploadGUI()
         {
-            _uploadInfo.author = _userJson.name;
+            _uploadInfo.author = MultyFrameworkEditorTool._userJson.name;
             GUILayout.Label("Upload:", Styles.boldLabel);
             EditorGUILayout.LabelField("Unity Version", _uploadInfo.unityVersion);
             EditorGUILayout.LabelField("Author", _uploadInfo.author);
@@ -226,7 +224,7 @@ namespace MultyFramework
                 GUILayout.FlexibleSpace();
                 if (GUILayout.Button(Contents.Go, GUILayout.Width(Contents.gap * 5)))
                 {
-                    UploadPkg(_uploadInfo);
+                    MultyFrameworkEditorTool.UploadPackage(_uploadInfo);
                 }
                 GUILayout.EndHorizontal();
 
@@ -240,7 +238,7 @@ namespace MultyFramework
                 _forgetPsdInfo.code= EditorGUILayout.TextField("Code", _forgetPsdInfo.code);
                 if (GUILayout.Button("Send",GUILayout.Width(Contents.gap*4)))
                 {
-                    ForgetEmailPassword(_forgetPsdInfo);
+                    MultyFrameworkEditorTool.ForgetEmailPassword(_forgetPsdInfo);
                 }
                 GUILayout.EndHorizontal();
             }
@@ -251,7 +249,7 @@ namespace MultyFramework
                 GUILayout.FlexibleSpace();
                 if (GUILayout.Button(Contents.Go))
                 {
-                    ChangeEmailPassword(_forgetPsdInfo);
+                    MultyFrameworkEditorTool.ChangeEmailPassword(_forgetPsdInfo);
                 }
                 GUILayout.EndHorizontal();
             }
@@ -260,10 +258,10 @@ namespace MultyFramework
 
         public override void Awake()
         {
-            _loginInfo = new LoginInfo();
-            _registerInfo = new RegisterInfo();
-            _uploadInfo = new UploadInfo();
-            _forgetPsdInfo = new ForgetPasswordInfo();
+            _loginInfo = new MultyFrameworkEditorTool.LoginInfo();
+            _registerInfo = new MultyFrameworkEditorTool.RegisterInfo();
+            _uploadInfo = new MultyFrameworkEditorTool.UploadInfo();
+            _forgetPsdInfo = new MultyFrameworkEditorTool.ForgetPasswordInfo();
         }
 
       

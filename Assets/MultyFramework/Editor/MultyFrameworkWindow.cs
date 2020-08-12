@@ -127,17 +127,6 @@ namespace MultyFramework
                 }
             }
         }
-        [MenuItem("MultyFramework/Window")]
-        static void OpenWindow()
-        {
-            var window = GetWindow<MultyFrameworkWindow>();
-            PanelGUIDrawer.window = window;
-            window._url = MultyFrameworkEditorTool.frameworkUrl;
-            window.webview = CreateInstance<WebViewHook>();
-            if (window.webview.Hook(window))
-            window.titleContent = new GUIContent("MultyFramework");
-            MultyFrameworkDrawer.Init();
-        }
 
         private IEnumerable<Type> GetTypes()
         {
@@ -293,7 +282,7 @@ namespace MultyFramework
             switch (value)
             {
                 case WindowSelectType.ReadMe:
-                    webview.LoadURL(_url);
+                    webview.LoadURL(url);
                     break;
                 case WindowSelectType.InProject:
                 case WindowSelectType.Tools:
@@ -360,7 +349,7 @@ namespace MultyFramework
 
 
         public WebViewHook webview;
-        private string _url;
+        public string url;
         private void ReadMe(Rect rect)
         {
             if (GUI.Button(new Rect(rect.x, rect.y, 25, 20), "<"))
@@ -370,8 +359,8 @@ namespace MultyFramework
             if (GUI.Button(new Rect(rect.x + 50, rect.y, 25, 20), EditorGUIUtility.IconContent("refresh")))
                 webview.Reload();
             if (GUI.Button(new Rect(rect.x + 75, rect.y, 25, 20), "→"))
-                webview.LoadURL(_url);
-            _url = GUI.TextField(new Rect(rect.x + 100, rect.y, rect.width - 100, 20), _url);
+                webview.LoadURL(url);
+            url = GUI.TextField(new Rect(rect.x + 100, rect.y, rect.width - 100, 20), url);
             if (Event.current.type == EventType.Repaint)
             {
                 webview.OnGUI(rect.Zoom(AnchorType.LowerCenter, new Vector2(0, -20))); 
@@ -390,7 +379,7 @@ namespace MultyFramework
 
         private void OnEnable()
         {
-            PanelGUIDrawer.window = this;
+            MultyFrameworkEditorTool.window = this;
             if (_splitView == null)
             {
                 _splitView = new SplitView();
@@ -454,6 +443,7 @@ namespace MultyFramework
         void OnDestroy()
         {
             DestroyImmediate(webview);
+            MultyFrameworkEditorTool.window = null;
         }
     }
 }

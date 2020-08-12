@@ -47,7 +47,10 @@ namespace MultyFramework
         private bool _dependencesFold = true;
         private Vector2 _scroll;
         private string[] _versionNames;
-
+        public override void Awake()
+        {
+            MultyFrameworkEditorTool.onPackagesChange += OnEnable;
+        }
         public override void OnEnable()
         {
             _versionNames = new string[versions.Length];
@@ -148,22 +151,16 @@ namespace MultyFramework
         }
         private void InstallPakage()
         {
-            MultyFrameworkEditorTool.RemovePakage(assetPath);
-            string path = string.Format("{0}/{1}_{2}.unitypackage", MultyFrameworkEditorTool.rootPath, name, version);
-            Directory.CreateDirectory(Path.GetDirectoryName(path));
-            HttpPkg.DownloadPkg(name, version, path, () =>
-            {
-                AssetDatabase.ImportPackage(path, true);
-                window.multyDrawersInfo.FreshInPorject();
-                OnEnable();
-            });
+            MultyFrameworkEditorTool.RemovePakageFromAssets(assetPath);
+            MultyFrameworkEditorTool.InstallPackage(name, version);
         }
         protected virtual void RemovePakage(string path)
         {
-            MultyFrameworkEditorTool.RemovePakage(path);
-            window.multyDrawersInfo.FreshInPorject();
-            OnEnable();
+            MultyFrameworkEditorTool.RemovePakageFromAssets(path);
         }
+
+
+
         public static implicit operator WebCollection(WebCollectionInfo info)
         {
             return new WebCollection(info.name, info.author, info.versions);

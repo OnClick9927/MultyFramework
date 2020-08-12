@@ -69,14 +69,14 @@ namespace MultyFramework
         /// <summary>
         /// 所属窗体
         /// </summary>
-        public static MultyFrameworkWindow window { get; set; }
+        public static MultyFrameworkWindow window { get { return MultyFrameworkEditorTool.window; } }
         /// <summary>
         /// 输出提示
         /// </summary>
         /// <param name="message"></param>
         protected static void ShowNotification(string message)
         {
-            window.ShowNotification(new GUIContent(message));
+            MultyFrameworkEditorTool.ShowNotification(message);
         }
         /// <summary>
         /// 显示进度条
@@ -86,14 +86,14 @@ namespace MultyFramework
         /// <param name="progress"></param>
         protected static void DisplayProgressBar(string title, string info, float progress)
         {
-            EditorUtility.DisplayProgressBar(title, info, progress);
+            MultyFrameworkEditorTool.DisplayProgressBar(title, info, progress);
         }
         /// <summary>
         /// 清理京都条
         /// </summary>
         protected static void ClearProgressBar()
         {
-            EditorUtility.ClearProgressBar();
+            MultyFrameworkEditorTool.ClearProgressBar();
         }
         /// <summary>
         /// 显示可以取消进度条
