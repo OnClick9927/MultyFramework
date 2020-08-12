@@ -20,8 +20,6 @@ namespace MultyFramework
         }
         private void ReadMe(Rect rect)
         {
-            //if (_webView.Hook(window))
-            //    _webView.LoadURL(helpurl);
             if (GUI.Button(new Rect(rect.x, rect.y, 25, 20), "<"))
                 _webView.Back();
             if (GUI.Button(new Rect(rect.x + 25, rect.y, 25, 20), ">"))
@@ -32,7 +30,6 @@ namespace MultyFramework
                 _webView.LoadURL(helpurl);
             if (GUI.Button(new Rect(rect.x + 100, rect.y, 25, 20), Contents.help, Styles.boldLabel))
                 Help.BrowseURL(helpurl);
-
             if (Event.current.type == EventType.Repaint)
             {
                 _webView.OnGUI(rect.Zoom(AnchorType.LowerCenter, new Vector2(0, -20)));

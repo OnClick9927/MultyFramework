@@ -87,7 +87,7 @@ namespace MultyFramework
                     _versionSelect = EditorGUILayout.Popup(_versionSelect, _versionNames, new GUIStyle("Popup")
                     {
                         margin = new RectOffset(2, 0, 3, 2)
-                    }, GUILayout.Width(Contents.gap * 7));
+                    }, GUILayout.Width(Contents.gap * 10));
                     using (new EditorGUI.DisabledScope(!exist))
                     {
                         if (GUILayout.Button("Remove"))

@@ -1,22 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
-using UnityEngine.Networking;
 
-#pragma warning disable 0414
-#pragma warning disable 0649
 namespace MultyFramework
 {
-   
     public abstract partial class MultyFrameworkDrawer : PanelGUIDrawer
     {
         private bool _describtionFold = true;
         private bool _dependencesFold = true;
         private Vector2 _scroll;
+        public override string helpurl { get { return MultyFrameworkEditorTool.baidu; } }
 
         public override void OnGUI(Rect rect)
         {
@@ -96,13 +88,5 @@ namespace MultyFramework
         protected virtual void ToolGUI()
         {
         }
-
-
-
-
-
-
-
-
     }
 }

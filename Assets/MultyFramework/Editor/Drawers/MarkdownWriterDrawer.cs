@@ -78,12 +78,6 @@ namespace MultyFramework
 
         private void ReadMe(Rect rect)
         {
-
-            //if (_webView.Hook(window))
-            //{
-            //    _webView.LoadHTML(FinalTxt());
-            //}
-
             if (Event.current.type == EventType.Repaint)
             {
                 _webView.OnGUI(rect);

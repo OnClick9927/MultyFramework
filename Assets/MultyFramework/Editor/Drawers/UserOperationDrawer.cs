@@ -183,7 +183,8 @@ namespace MultyFramework
                         _uploadInfo.assetPath = string.Empty;
                     else
                     {
-                        int index = _uploadInfo.assetPath.IndexOf("Assets");
+                        _uploadInfo.name = System.IO.Path.GetFileName(_uploadInfo.assetPath);
+                        int index = _uploadInfo.assetPath.IndexOf("Assets"); 
                         _uploadInfo.assetPath = _uploadInfo.assetPath.Remove(0, index);
                     }
                 }

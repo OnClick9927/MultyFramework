@@ -41,17 +41,6 @@ namespace MultyFramework
             _index = 0;
         }
 
-        private void ReadMe(Rect rect)
-        {
-            //if (_webView.Hook(window))
-            //    _webView.LoadURL(_urls[_index]);
-
-            if (Event.current.type == EventType.Repaint)
-            {
-                _webView.OnGUI(rect);
-            }
-        }
-
         protected override void ToolGUI()
         {
             GUILayout.BeginHorizontal(Styles.toolbar);
@@ -68,7 +57,10 @@ namespace MultyFramework
             GUILayout.EndHorizontal();
             var rect = GUILayoutUtility.GetLastRect();
             Rect r = new Rect(rect.x, rect.yMax, rect.width, window.position.height - rect.yMax - Contents.gap * 3);
-            ReadMe(r);
+            if (Event.current.type == EventType.Repaint)
+            {
+                _webView.OnGUI(r);
+            }
         }
     }
 }

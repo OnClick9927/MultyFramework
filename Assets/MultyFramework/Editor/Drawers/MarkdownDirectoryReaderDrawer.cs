@@ -157,23 +157,14 @@ namespace MultyFramework
                     rect.width = width - 10;
                 }
                 Rect r = new Rect(rect.x, rect.yMax, rect.width, window.position.height - rect.yMax - Contents.gap * 3);
-                ReadMe(r);
-
+                if (Event.current.type == EventType.Repaint)
+                {
+                    _webView.OnGUI(r);
+                }
             }
 
         }
-        private void ReadMe(Rect rect)
-        {
-            //if (_webView.Hook(window))
-            //{
-            //    _webView.LoadHTML(FinalTxt());
-            //}
- 
-            if (Event.current.type == EventType.Repaint)
-            {
-                _webView.OnGUI(rect);
-            }
-        }
+      
     }
 }
 

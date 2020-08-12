@@ -6,7 +6,8 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
-
+#pragma warning disable 0414
+#pragma warning disable 0649
 namespace MultyFramework
 {
     class MultyFrameworkEditorTool
@@ -14,9 +15,6 @@ namespace MultyFramework
         #region upkg
         public static class PkgConstant
         {
-            // public const string HOST = "https://upkg.org/api/";
-            //public const string HOST = "https://test-api.upkg.org/v1/";
-            // public const string HOST = "https://api.upkg.org/v1/";
             public const string HOST = "https://api.upkg.net/v1/";
 
             public const string API_LOGIN = HOST + "login";
@@ -569,6 +567,13 @@ namespace MultyFramework
 
         private const string userJsonName = "version.json";
         private static Encoding _encoding = Encoding.UTF8;
+        public const string baidu = "https://www.baidu.com/";
+        public const string frameworkUrl = "https://upkg.org";
+        public const string version="0.0.0.1";
+        public const string framewokName = "MultyFramework";
+        private static MultyFrameworkWindow _window;
+        public static event Action onPackagesChange;
+
         private static string userjsonPath
         {
             get { return MultyFrameworkEditorTool.rootPath + "/user.json"; }
@@ -603,8 +608,6 @@ namespace MultyFramework
 
             }
         }
-
-        private static MultyFrameworkWindow _window;
         public static MultyFrameworkWindow window
         {
             get
@@ -619,11 +622,6 @@ namespace MultyFramework
                 _window = value;
             }
         }
-        public const string baidu = "https://www.baidu.com/";
-        public const string frameworkUrl = "https://upkg.org";
-        public const string version="0.0.0.1";
-        public const string framewokName = "MultyFramework";
-        public static event Action onPackagesChange;
         public static string rootPath
         {
             get
@@ -683,7 +681,7 @@ namespace MultyFramework
             public string author = "author";
             public string describtion = "No Describtion ";
             public string assetPath = "Assets";
-            public string helpurl = MultyFrameworkEditorTool.baidu;
+            public string helpurl = frameworkUrl;
             public List<string> dependences = new List<string>();
         }
 
