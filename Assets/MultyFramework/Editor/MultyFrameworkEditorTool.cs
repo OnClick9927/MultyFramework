@@ -29,6 +29,7 @@ namespace MultyFramework
                 if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path);
+                    File.SetAttributes(path, FileAttributes.Hidden);
                 }
                 return path;
             }

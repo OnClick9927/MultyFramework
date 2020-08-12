@@ -777,9 +777,12 @@ namespace MultyFramework
                     {
                         return d.pkg_name == _data.pkg_name && d.last_time == _data.last_time && d.last_version == _data.last_version;
                     });
+                    localDatas.RemoveAll((d)=> {
+                        return d.pkg_name == _data.pkg_name;
+                    });
+
                     if (_tmp != null)
                     {
-                        localDatas.Remove(_tmp);
                         string path = Path.Combine(_pkgversionjsonPath, _data.pkg_name + ".json");
                         WebCollectionInfo info = JsonUtility.FromJson<WebCollectionInfo>(File.ReadAllText(path));
                         TryFinish(info, localDatas, datas);
@@ -916,7 +919,7 @@ namespace MultyFramework
         }
         protected static void UploadPkg(UploadInfo uploadInfo)
         {
-           // MultyFrameworkEditorTool.CreateVersionJson(uploadInfo.assetPath, uploadInfo);
+          // MultyFrameworkEditorTool.CreateVersionJson(uploadInfo.assetPath, uploadInfo);
             AssetDatabase.ExportPackage(uploadInfo.assetPath, uploadInfo.name + ".unitypackage",
                 ExportPackageOptions.Recurse);
             byte[] bytes = File.ReadAllBytes("Assets/../" + uploadInfo.name + ".unitypackage");
@@ -927,6 +930,7 @@ namespace MultyFramework
                 pkg_path = uploadInfo.assetPath,
                 pkg_name = uploadInfo.name,
                 version = uploadInfo.version,
+                dependences="",
                 permissions = uploadInfo.isPublic
                     ? PkgConstant.PKG_PERMISSIONS_PUBLIC
                     : PkgConstant.PKG_PERMISSIONS_PRIVATE,
