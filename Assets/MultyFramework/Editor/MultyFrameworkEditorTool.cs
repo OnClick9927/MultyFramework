@@ -968,7 +968,13 @@ namespace MultyFramework
 
             HttpPkg.UploadPkg(form, bytes, (m) =>
             {
-                File.Move("Assets/../" + uploadInfo.name + ".unitypackage", Path.Combine(localPkgPath, uploadInfo.name + "_" + uploadInfo.version + ".unitypackage"));
+                string source = "Assets/../" + uploadInfo.name + ".unitypackage";
+                string dest = Path.Combine(localPkgPath, uploadInfo.name + "_" + uploadInfo.version + ".unitypackage");
+                if (File.Exists(dest))
+                {
+                    File.Delete(dest);
+                }
+                File.Move(source,dest);
                 FreshWebCollection();
             });
         }
