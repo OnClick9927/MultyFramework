@@ -428,7 +428,10 @@ namespace MultyFramework
             {
                 if (_windowSelectType == WindowSelectType.ReadMe)
                 {
-                    ReadMe(new Rect(new Vector2(0, toolbarHeight), position.size));
+                    Rect r = GUILayoutUtility.GetLastRect();
+
+                    ReadMe(new Rect(new Rect(new Vector2(0, r.yMax),
+                          new Vector2(position.width, position.height - r.height))));
                 }
                 else
                 {

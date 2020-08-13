@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System.IO;
+using System;
 
 namespace MultyFramework
 {
@@ -76,7 +77,10 @@ namespace MultyFramework
                     GUILayout.Space(10);
                     GUILayout.Label(unityVersion);
                     GUILayout.FlexibleSpace();
-
+                    if (GUILayout.Button(new GUIContent("Newest", "Update to Newest")))
+                    {
+                        UpdatePakage();
+                    }
                     using (new EditorGUI.DisabledScope(exist))
                     {
                         if (GUILayout.Button("Install", Styles.buttonLeft))
@@ -149,6 +153,12 @@ namespace MultyFramework
             }
             GUILayout.EndArea();
         }
+
+        private void UpdatePakage()
+        {
+            MultyFrameworkEditorTool.UpdatePakage(name);
+        }
+
         private void InstallPakage()
         {
             MultyFrameworkEditorTool.RemovePakageFromAssets(assetPath);

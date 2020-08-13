@@ -206,6 +206,8 @@ namespace MultyFramework
             }
         }
 
+      
+
         public class HttpPkg
         {
             private abstract class Request
@@ -730,13 +732,10 @@ namespace MultyFramework
             Directory.Delete(rootPath, true);
         }
 
-        [MenuItem(framewokName + "/Update")]
+        [MenuItem(framewokName + "/Update To Newest")]
         static void UpdateFramework()
         {
-            string path = string.Format("{0}/{1}_{2}.unitypackage", pkgPath, framewokName, "_lastet");
-            HttpPkg.DownloadPkg(framewokName, null, path, () => {
-                AssetDatabase.ImportPackage(path, true);
-            });
+            UpdatePakage(framewokName);
         }
         [MenuItem(framewokName + "/Window")]
         static void Open()
@@ -935,7 +934,13 @@ namespace MultyFramework
 
 
 
-
+        internal static void UpdatePakage(string name)
+        {
+            string path = string.Format("{0}/{1}_{2}.unitypackage", pkgPath, name, "_lasted");
+            HttpPkg.DownloadPkg(name, null, path, () => {
+                AssetDatabase.ImportPackage(path, true);
+            });
+        }
         public static void UploadPackage(UploadInfo uploadInfo)
         {
             // MultyFrameworkEditorTool.CreateVersionJson(uploadInfo.assetPath, uploadInfo);
