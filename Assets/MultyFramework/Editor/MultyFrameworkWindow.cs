@@ -116,6 +116,10 @@ namespace MultyFramework
                                     break;
                             }
                             _split = Mathf.Clamp(_split, 100, position.width - 100);
+                            if (EditorWindow.focusedWindow!=null)
+                            {
+                                EditorWindow.focusedWindow.Repaint();
+                            }
                         }
                         break;
                     case EventType.MouseUp:
@@ -440,7 +444,7 @@ namespace MultyFramework
                           new Vector2(position.width, position.height - r.height)));
                 }
             }
-            Repaint();
+           // Repaint();
         }
 
         void OnDestroy()

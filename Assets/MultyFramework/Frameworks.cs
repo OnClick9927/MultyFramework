@@ -11,8 +11,6 @@ namespace MultyFramework
     public class Frameworks : MonoBehaviour
     {
 //ToDo
-		public static ExampleFrame1 ExampleFrame1{ get { return GetFramework("ExampleFrame1") as ExampleFrame1;}} 
-		public static ExampleFrame2 ExampleFrame2{ get { return GetFramework("ExampleFrame2") as ExampleFrame2;}} 
 //ToDo
 
         /// <summary>
