@@ -7,7 +7,6 @@ namespace MultyFramework
     public class EditorFrameworks
     {
         //ToDo
-		public static ExampleFrame1 ExampleFrame1{ get { return GetFramework("ExampleFrame1") as ExampleFrame1;}} 
 //ToDo
 
         /// <summary>
