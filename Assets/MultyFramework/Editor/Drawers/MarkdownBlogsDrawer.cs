@@ -31,11 +31,11 @@ namespace MultyFramework
         }
         private string FinalTxt()
         {
-            string content = UnityEngine.Networking.UnityWebRequest.EscapeURL("", Encoding.UTF8)
+            string content = MultyFrameworkEditorTool.EscapeURL("", Encoding.UTF8)
                 .Replace("+", "%20");
             try
             {
-                content = UnityEngine.Networking.UnityWebRequest.EscapeURL(_editorTxt, Encoding.UTF8)
+                content = MultyFrameworkEditorTool.EscapeURL(_editorTxt, Encoding.UTF8)
                     .Replace("+", "%20");
             }
             catch

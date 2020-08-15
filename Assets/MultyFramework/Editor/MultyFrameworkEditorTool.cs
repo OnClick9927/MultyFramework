@@ -1111,5 +1111,15 @@ namespace MultyFramework
         {
             return EditorUtility.DisplayDialog(title, info, ok, cancel);
         }
+
+
+        public static string EscapeURL(string url, Encoding en)
+        {
+#if UNITY_2018_1_OR_NEWER
+            return UnityWebRequest.EscapeURL(url, en);
+#else
+            return WWW.EscapeURL(url, en);
+#endif
+        }
     }
 }
