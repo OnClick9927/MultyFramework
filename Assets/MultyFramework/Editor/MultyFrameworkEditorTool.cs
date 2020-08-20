@@ -1115,7 +1115,11 @@ namespace MultyFramework
 
         public static string EscapeURL(string url, Encoding en)
         {
+<<<<<<< HEAD
 #if UNITY_2018_1_OR_NEWER
+=======
+#if UNITY_2018_OR_NEWER
+>>>>>>> fa2dbdc5392c65313fac4d94c2a15a2d693fe4bf
             return UnityWebRequest.EscapeURL(url, en);
 #else
             return WWW.EscapeURL(url, en);
